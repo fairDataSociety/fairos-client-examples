@@ -11,128 +11,9 @@ import (
 	"os/signal"
 	"time"
 
+	dfsCommon "github.com/fairdatasociety/fairOS-dfs/cmd/common"
 	"github.com/gorilla/websocket"
 )
-
-type WebsocketRequest struct {
-	Event  Event       `json:"event"`
-	Params interface{} `json:"params,omitempty"`
-}
-
-type WebsocketResponse struct {
-	Event      Event                  `json:"event"`
-	StatusCode int                    `json:"code"`
-	Params     map[string]interface{} `json:"params,omitempty"`
-}
-
-type Event string
-
-var (
-	UserSignup      Event = "/user/signup"
-	UserLogin       Event = "/user/login"
-	UserImport      Event = "/user/import"
-	UserPresent     Event = "/user/present"
-	UserIsLoggedin  Event = "/user/isloggedin"
-	UserLogout      Event = "/user/logout"
-	UserExport      Event = "/user/export"
-	UserDelete      Event = "/user/delete"
-	UserStat        Event = "/user/stat"
-	PodNew          Event = "/pod/new"
-	PodOpen         Event = "/pod/open"
-	PodClose        Event = "/pod/close"
-	PodSync         Event = "/pod/sync"
-	PodDelete       Event = "/pod/delete"
-	PodLs           Event = "/pod/ls"
-	PodStat         Event = "/pod/stat"
-	PodShare        Event = "/pod/share"
-	PodReceive      Event = "/pod/receive"
-	PodReceiveInfo  Event = "/pod/receiveinfo"
-	DirIsPresent    Event = "/dir/present"
-	DirMkdir        Event = "/dir/mkdir"
-	DirRmdir        Event = "/dir/rmdir"
-	DirLs           Event = "/dir/ls"
-	DirStat         Event = "/dir/stat"
-	FileDownload    Event = "/file/download"
-	FileUpload      Event = "/file/upload"
-	FileShare       Event = "/file/share"
-	FileReceive     Event = "/file/receive"
-	FileReceiveInfo Event = "/file/receiveinfo"
-	FileDelete      Event = "/file/delete"
-	FileStat        Event = "/file/stat"
-	KVCreate        Event = "/kv/new"
-	KVList          Event = "/kv/ls"
-	KVOpen          Event = "/kv/open"
-	KVDelete        Event = "/kv/delete"
-	KVCount         Event = "/kv/count"
-	KVEntryPut      Event = "/kv/entry/put"
-	KVEntryGet      Event = "/kv/entry/get"
-	KVEntryDelete   Event = "/kv/entry/del"
-	KVLoadCSV       Event = "/kv/loadcsv"
-	KVSeek          Event = "/kv/seek"
-	KVSeekNext      Event = "/kv/seek/next"
-	DocCreate       Event = "/doc/new"
-	DocList         Event = "/doc/ls"
-	DocOpen         Event = "/doc/open"
-	DocCount        Event = "/doc/count"
-	DocDelete       Event = "/doc/delete"
-	DocFind         Event = "/doc/find"
-	DocEntryPut     Event = "/doc/entry/put"
-	DocEntryGet     Event = "/doc/entry/get"
-	DocEntryDel     Event = "/doc/entry/del"
-	DocLoadJson     Event = "/doc/loadjson"
-	DocIndexJson    Event = "/doc/indexjson"
-)
-
-type UserRequest struct {
-	UserName string `json:"user_name,omitempty"`
-	Password string `json:"password,omitempty"`
-	Address  string `json:"address,omitempty"`
-	Mnemonic string `json:"mnemonic,omitempty"`
-}
-
-type PodRequest struct {
-	PodName   string `json:"pod_name,omitempty"`
-	Password  string `json:"password,omitempty"`
-	Reference string `json:"reference,omitempty"`
-}
-
-type FileRequest struct {
-	PodName   string `json:"pod_name,omitempty"`
-	TableName string `json:"table_name,omitempty"`
-	DirPath   string `json:"dir_path,omitempty"`
-	BlockSize string `json:"block_size,omitempty"`
-	FileName  string `json:"file_name,omitempty"`
-}
-
-type FileDownloadRequest struct {
-	PodName  string `json:"pod_name,omitempty"`
-	Filepath string `json:"file_path,omitempty"`
-}
-
-type KVRequest struct {
-	PodName     string `json:"pod_name,omitempty"`
-	TableName   string `json:"table_name,omitempty"`
-	IndexType   string `json:"index_type,omitempty"`
-	Key         string `json:"key,omitempty"`
-	Value       string `json:"value,omitempty"`
-	StartPrefix string `json:"start_prefix,omitempty"`
-	EndPrefix   string `json:"end_prefix,omitempty"`
-	Limit       string `json:"limit,omitempty"`
-	Memory      string `json:"memory,omitempty"`
-}
-
-type DocRequest struct {
-	PodName       string `json:"pod_name,omitempty"`
-	TableName     string `json:"table_name,omitempty"`
-	ID            string `json:"id,omitempty"`
-	Document      string `json:"doc,omitempty"`
-	SimpleIndex   string `json:"si,omitempty"`
-	CompoundIndex string `json:"ci,omitempty"`
-	Expression    string `json:"expr,omitempty"`
-	Mutable       bool   `json:"mutable,omitempty"`
-	Limit         string `json:"limit,omitempty"`
-	FileName      string `json:"file_name,omitempty"`
-}
 
 func main() {
 	addr := "localhost:9090"
@@ -187,13 +68,14 @@ func main() {
 			}
 			switch mt {
 			case 1:
-				res := &WebsocketResponse{}
+				res := &dfsCommon.WebsocketResponse{}
 				if err := json.Unmarshal(message, res); err != nil {
 					fmt.Println("got error ", err)
 					continue
 				}
-				if res.Event == FileDownload {
-					cl = fmt.Sprintf("%v", res.Params["content_length"])
+				if res.Event == dfsCommon.FileDownload {
+					params := res.Params.(map[string]interface{})
+					cl = fmt.Sprintf("%v", params["content_length"])
 					downloadFn(cl)
 					continue
 				}
@@ -210,9 +92,9 @@ func main() {
 	podName := "pod1"
 	password := "159263487"
 	username := fmt.Sprintf("user_%d", time.Now().Unix())
-	sighup := &WebsocketRequest{
-		Event: UserSignup,
-		Params: UserRequest{
+	sighup := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.UserSignup,
+		Params: dfsCommon.UserRequest{
 			UserName: username,
 			Password: password,
 		},
@@ -230,9 +112,9 @@ func main() {
 	}
 
 	// userLogin
-	login := &WebsocketRequest{
-		Event: UserLogin,
-		Params: UserRequest{
+	login := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.UserLogin,
+		Params: dfsCommon.UserRequest{
 			UserName: username,
 			Password: password,
 		},
@@ -249,9 +131,9 @@ func main() {
 	}
 
 	// userImport
-	uImport := &WebsocketRequest{
-		Event: UserImport,
-		Params: UserRequest{
+	uImport := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.UserImport,
+		Params: dfsCommon.UserRequest{
 			UserName: "asabya3",
 			Password: "159263487",
 			Address:  "e22505220696B51E269274443E31C8cf97DBccAE",
@@ -270,9 +152,9 @@ func main() {
 	}
 
 	// userPresent
-	uPresent := &WebsocketRequest{
-		Event: UserPresent,
-		Params: UserRequest{
+	uPresent := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.UserPresent,
+		Params: dfsCommon.UserRequest{
 			UserName: username,
 		},
 	}
@@ -288,9 +170,9 @@ func main() {
 	}
 
 	// userLoggedIN
-	uLoggedIn := &WebsocketRequest{
-		Event: UserIsLoggedin,
-		Params: UserRequest{
+	uLoggedIn := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.UserIsLoggedin,
+		Params: dfsCommon.UserRequest{
 			UserName: username,
 		},
 	}
@@ -306,8 +188,8 @@ func main() {
 	}
 
 	// userExport
-	userExport := &WebsocketRequest{
-		Event: UserExport,
+	userExport := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.UserExport,
 	}
 	data, err = json.Marshal(userExport)
 	if err != nil {
@@ -321,8 +203,8 @@ func main() {
 	}
 
 	// userStat
-	userStat := &WebsocketRequest{
-		Event: UserStat,
+	userStat := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.UserStat,
 	}
 	data, err = json.Marshal(userStat)
 	if err != nil {
@@ -336,9 +218,9 @@ func main() {
 	}
 
 	// podNew
-	podNew := &WebsocketRequest{
-		Event: PodNew,
-		Params: PodRequest{
+	podNew := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.PodNew,
+		Params: dfsCommon.PodRequest{
 			PodName:  podName,
 			Password: password,
 		},
@@ -355,9 +237,9 @@ func main() {
 	}
 
 	// podOpen
-	podOpen := &WebsocketRequest{
-		Event: PodOpen,
-		Params: PodRequest{
+	podOpen := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.PodOpen,
+		Params: dfsCommon.PodRequest{
 			PodName:  podName,
 			Password: password,
 		},
@@ -374,8 +256,8 @@ func main() {
 	}
 
 	// podLs
-	podLs := &WebsocketRequest{
-		Event: PodLs,
+	podLs := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.PodLs,
 	}
 	data, err = json.Marshal(podLs)
 	if err != nil {
@@ -389,9 +271,9 @@ func main() {
 	}
 
 	// mkdir
-	mkDir := &WebsocketRequest{
-		Event: DirMkdir,
-		Params: FileRequest{
+	mkDir := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DirMkdir,
+		Params: dfsCommon.FileRequest{
 			PodName: podName,
 			DirPath: "/d",
 		},
@@ -408,9 +290,9 @@ func main() {
 	}
 
 	// rmDir
-	rmDir := &WebsocketRequest{
-		Event: DirRmdir,
-		Params: FileRequest{
+	rmDir := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DirRmdir,
+		Params: dfsCommon.FileRequest{
 			PodName: podName,
 			DirPath: "/d",
 		},
@@ -427,9 +309,9 @@ func main() {
 	}
 
 	// dirLs
-	dirLs := &WebsocketRequest{
-		Event: DirLs,
-		Params: FileRequest{
+	dirLs := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DirLs,
+		Params: dfsCommon.FileRequest{
 			PodName: podName,
 			DirPath: "/",
 		},
@@ -446,9 +328,9 @@ func main() {
 	}
 
 	// dirStat
-	dirStat := &WebsocketRequest{
-		Event: DirStat,
-		Params: FileRequest{
+	dirStat := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DirStat,
+		Params: dfsCommon.FileRequest{
 			PodName: podName,
 			DirPath: "/",
 		},
@@ -465,9 +347,9 @@ func main() {
 	}
 
 	// dirPresent
-	dirPresent := &WebsocketRequest{
-		Event: DirIsPresent,
-		Params: FileRequest{
+	dirPresent := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DirIsPresent,
+		Params: dfsCommon.FileRequest{
 			PodName: podName,
 			DirPath: "/d",
 		},
@@ -484,9 +366,9 @@ func main() {
 	}
 
 	// Upload
-	upload := &WebsocketRequest{
-		Event: FileUpload,
-		Params: FileRequest{
+	upload := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.FileUpload,
+		Params: dfsCommon.FileRequest{
 			PodName:   podName,
 			DirPath:   "/",
 			BlockSize: "1Mb",
@@ -520,9 +402,9 @@ func main() {
 	}
 
 	// Download
-	download := &WebsocketRequest{
-		Event: FileDownload,
-		Params: FileDownloadRequest{
+	download := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.FileDownload,
+		Params: dfsCommon.FileDownloadRequest{
 			PodName:  podName,
 			Filepath: "/index.json",
 		},
@@ -539,9 +421,9 @@ func main() {
 	}
 
 	// stat
-	stat := &WebsocketRequest{
-		Event: FileStat,
-		Params: FileDownloadRequest{
+	stat := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.FileStat,
+		Params: dfsCommon.FileDownloadRequest{
 			PodName:  podName,
 			Filepath: "/index.json",
 		},
@@ -559,9 +441,9 @@ func main() {
 
 	table := "kv_1"
 	// kvCreate
-	kvCreate := &WebsocketRequest{
-		Event: KVCreate,
-		Params: KVRequest{
+	kvCreate := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.KVCreate,
+		Params: dfsCommon.KVRequest{
 			PodName:   podName,
 			TableName: table,
 			IndexType: "string",
@@ -579,9 +461,9 @@ func main() {
 	}
 
 	// kvList
-	kvList := &WebsocketRequest{
-		Event: KVList,
-		Params: KVRequest{
+	kvList := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.KVList,
+		Params: dfsCommon.KVRequest{
 			PodName: podName,
 		},
 	}
@@ -597,9 +479,9 @@ func main() {
 	}
 
 	// kvOpen
-	kvOpen := &WebsocketRequest{
-		Event: KVOpen,
-		Params: KVRequest{
+	kvOpen := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.KVOpen,
+		Params: dfsCommon.KVRequest{
 			PodName:   podName,
 			TableName: table,
 		},
@@ -616,9 +498,9 @@ func main() {
 	}
 
 	// loadcsv
-	loadcsv := &WebsocketRequest{
-		Event: KVLoadCSV,
-		Params: FileRequest{
+	loadcsv := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.KVLoadCSV,
+		Params: dfsCommon.FileRequest{
 			PodName:   podName,
 			TableName: table,
 			DirPath:   "/",
@@ -653,9 +535,9 @@ func main() {
 	}
 
 	// kvEntryPut
-	kvEntryPut := &WebsocketRequest{
-		Event: KVEntryPut,
-		Params: KVRequest{
+	kvEntryPut := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.KVEntryPut,
+		Params: dfsCommon.KVRequest{
 			PodName:   podName,
 			TableName: table,
 			Key:       "key1",
@@ -674,9 +556,9 @@ func main() {
 	}
 
 	// kvCount
-	kvCount := &WebsocketRequest{
-		Event: KVCount,
-		Params: KVRequest{
+	kvCount := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.KVCount,
+		Params: dfsCommon.KVRequest{
 			PodName:   podName,
 			TableName: table,
 		},
@@ -693,9 +575,9 @@ func main() {
 	}
 
 	// kvGet
-	kvGet := &WebsocketRequest{
-		Event: KVEntryGet,
-		Params: KVRequest{
+	kvGet := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.KVEntryGet,
+		Params: dfsCommon.KVRequest{
 			PodName:   podName,
 			TableName: table,
 			Key:       "key1",
@@ -713,9 +595,9 @@ func main() {
 	}
 
 	// kvSeek
-	kvSeek := &WebsocketRequest{
-		Event: KVSeek,
-		Params: KVRequest{
+	kvSeek := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.KVSeek,
+		Params: dfsCommon.KVRequest{
 			PodName:     podName,
 			TableName:   table,
 			StartPrefix: "key",
@@ -733,9 +615,9 @@ func main() {
 	}
 
 	// kvSeek
-	kvSeekNext := &WebsocketRequest{
-		Event: KVSeekNext,
-		Params: KVRequest{
+	kvSeekNext := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.KVSeekNext,
+		Params: dfsCommon.KVRequest{
 			PodName:   podName,
 			TableName: table,
 		},
@@ -752,9 +634,9 @@ func main() {
 	}
 
 	// kvEntryDel
-	kvEntryDel := &WebsocketRequest{
-		Event: KVEntryDelete,
-		Params: KVRequest{
+	kvEntryDel := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.KVEntryDelete,
+		Params: dfsCommon.KVRequest{
 			PodName:   podName,
 			TableName: table,
 			Key:       "key1",
@@ -773,9 +655,9 @@ func main() {
 
 	docTable := "doc_1"
 	// docCreate
-	docCreate := &WebsocketRequest{
-		Event: DocCreate,
-		Params: DocRequest{
+	docCreate := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocCreate,
+		Params: dfsCommon.DocRequest{
 			PodName:     podName,
 			TableName:   docTable,
 			SimpleIndex: "first_name=string,age=number",
@@ -794,9 +676,9 @@ func main() {
 	}
 
 	// docLs
-	docLs := &WebsocketRequest{
-		Event: DocList,
-		Params: DocRequest{
+	docLs := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocList,
+		Params: dfsCommon.DocRequest{
 			PodName:   podName,
 			TableName: docTable,
 		},
@@ -813,9 +695,9 @@ func main() {
 	}
 
 	// docOpen
-	docOpen := &WebsocketRequest{
-		Event: DocOpen,
-		Params: DocRequest{
+	docOpen := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocOpen,
+		Params: dfsCommon.DocRequest{
 			PodName:   podName,
 			TableName: docTable,
 		},
@@ -832,9 +714,9 @@ func main() {
 	}
 
 	// docEntryPut
-	docEntryPut := &WebsocketRequest{
-		Event: DocEntryPut,
-		Params: DocRequest{
+	docEntryPut := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocEntryPut,
+		Params: dfsCommon.DocRequest{
 			PodName:   podName,
 			TableName: docTable,
 			Document:  `{"id":"1", "first_name": "Hello1", "age": 11}`,
@@ -852,9 +734,9 @@ func main() {
 	}
 
 	// docEntryGet
-	docEntryGet := &WebsocketRequest{
-		Event: DocEntryGet,
-		Params: DocRequest{
+	docEntryGet := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocEntryGet,
+		Params: dfsCommon.DocRequest{
 			PodName:   podName,
 			TableName: docTable,
 			ID:        "1",
@@ -872,9 +754,9 @@ func main() {
 	}
 
 	// loadjson
-	loadjson := &WebsocketRequest{
-		Event: DocLoadJson,
-		Params: FileRequest{
+	loadjson := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocLoadJson,
+		Params: dfsCommon.FileRequest{
 			PodName:   podName,
 			TableName: docTable,
 			DirPath:   "/",
@@ -909,9 +791,9 @@ func main() {
 	}
 
 	// indexjson
-	indexjson := &WebsocketRequest{
-		Event: DocIndexJson,
-		Params: DocRequest{
+	indexjson := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocIndexJson,
+		Params: dfsCommon.DocRequest{
 			PodName:   podName,
 			TableName: docTable,
 			FileName:  "/index.json",
@@ -929,9 +811,9 @@ func main() {
 	}
 
 	// docFind
-	docFind := &WebsocketRequest{
-		Event: DocFind,
-		Params: DocRequest{
+	docFind := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocFind,
+		Params: dfsCommon.DocRequest{
 			PodName:    podName,
 			TableName:  docTable,
 			Expression: `age>10`,
@@ -949,9 +831,9 @@ func main() {
 	}
 
 	// docCount
-	docCount := &WebsocketRequest{
-		Event: DocCount,
-		Params: DocRequest{
+	docCount := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocCount,
+		Params: dfsCommon.DocRequest{
 			PodName:   podName,
 			TableName: docTable,
 		},
@@ -968,9 +850,9 @@ func main() {
 	}
 
 	// docEntryGet
-	docEntryDel := &WebsocketRequest{
-		Event: DocEntryDel,
-		Params: DocRequest{
+	docEntryDel := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocEntryDel,
+		Params: dfsCommon.DocRequest{
 			PodName:   podName,
 			TableName: docTable,
 			ID:        "1",
@@ -988,9 +870,9 @@ func main() {
 	}
 
 	// docDel
-	docDel := &WebsocketRequest{
-		Event: DocDelete,
-		Params: DocRequest{
+	docDel := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.DocDelete,
+		Params: dfsCommon.DocRequest{
 			PodName:   podName,
 			TableName: docTable,
 		},
