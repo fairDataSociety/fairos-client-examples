@@ -80,7 +80,7 @@ To make a successful websocket connection we need to dial the following
 FairOS websocket communication relies on request-response model. After a successful connection is made, we can
 send an event request with their required payload and expect an event response with associated payload.
 
-*** we can relate each event with a REST api and refer to that request and response body from the OpenAPI Specification **
+> **_NOTE:_** we can relate each event with a REST api and refer to that request and response body from the OpenAPI Specification
 
 Here is how an event request body should look like
 ```
@@ -121,12 +121,12 @@ Currently, we have a total of three events that deals with file upload.
 To upload a file via a websocket connection we need to first request for the event then send the file in `BinaryMessage`
 in subsequent requests.
 
-Please refer to the client for implementation more details. 
+> **_NOTE:_** Please refer to the client for implementation more details. 
 
 ### File download
 
 Event `/file/download` deals with file download. Server will first send event response for `/event/download` 
 then send the file content in `BinaryMessage` in subsequent responses.
 
-Please refer to the client for implementation more details. 
+> **_NOTE:_** Please refer to the client for implementation more details. 
  
