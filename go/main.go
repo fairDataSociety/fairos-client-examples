@@ -17,11 +17,12 @@ import (
 
 func main() {
 	addr := "localhost:9090"
+
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
 	u := url.URL{Scheme: "ws", Host: addr, Path: "/ws/v1/"}
-	log.Printf("connecting to %s", u.String())
+	log.Printf("connecting to %s\n", u.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {

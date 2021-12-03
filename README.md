@@ -78,14 +78,14 @@ To make a successful websocket connection we need to dial the following
 ### Requests & Responses
 
 FairOS websocket communication relies on request-response model. After a successful connection is made, we can
-send an event request with their required payload and expect an event response with associated payload.
+send an event request with its required payload and expect an event response with associated payload.
 
 > **_NOTE:_** we can relate each event with a REST api and refer to that request and response body from the OpenAPI Specification
 
-Here is how an event request body should look like
+Here is how an event request should look like
 ```
 {
-    "event": "/user/signup"
+    "event": "/user/signup",
     "params": {
         "user_name": "brand_new_user",
         "password": "VerySecretPassword"
@@ -93,7 +93,7 @@ Here is how an event request body should look like
 }
 ```
 
-For each event request, server will send the response associated with the request along with the event and `status_code`.
+For each event request, server will send the response associated with the request along with the same event and `status_code`.
 The `status_code` will indicate the same as if it were a REST api call.
 
 
@@ -118,15 +118,39 @@ Currently, we have a total of three events that deals with file upload.
     "/kv/loadcsv"
 ```
 
-To upload a file via a websocket connection we need to first request for the event then send the file in `BinaryMessage`
+To upload a file via a websocket connection we need to first request for the event then send the file as `BinaryMessage`
 in subsequent requests.
 
-> **_NOTE:_** Please refer to the client for implementation more details. 
+> **_NOTE:_** Please refer to the client implementation for more details. 
 
 ### File download
 
 Event `/file/download` deals with file download. Server will first send event response for `/event/download` 
-then send the file content in `BinaryMessage` in subsequent responses.
+then send the file content as `BinaryMessage` or `Blob` in subsequent responses.
 
-> **_NOTE:_** Please refer to the client for implementation more details. 
+> **_NOTE:_** Please refer to the client implementation for more details. 
  
+### Authentication
+
+These following events do not need any authentication/cookie for getting an event response.
+
+ ```
+    "/user/signup"
+    "/user/login"
+    "/user/import"
+    "/user/present"
+    "/user/isloggedin"
+    "/pod/receive"
+    "/pod/receiveinfo"
+ ```
+
+All the other events must have a vaild cookie to operate. The cookie is handled internally in the server.
+To get response from other events we need the authenticate the with a valid user credential first after a
+successful websocket connection. i.e. To get a valid response we have to call the login event in each 
+websocket connection before calling events other than the above ones.
+
+### Ping-Pong
+
+To close long running idle connections we have a PING-Pong check. The maximum deadline for an idle connection is 4 seconds.
+The server sends a PING every 3.6 second interval, to which the client needs to send PONG. If the client does not reply with a PONG
+withing that time, the connection will be terminated.
