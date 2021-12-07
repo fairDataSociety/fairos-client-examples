@@ -1,3 +1,8 @@
+fs = require('fs');
+var W3CWebSocket = require('websocket').w3cwebsocket;
+const websocketStream = require('websocket-stream/stream');
+
+
 var UserSignup       = "/user/signup"
 var UserLogin        = "/user/login"
 var UserImport       = "/user/import"
@@ -22,7 +27,7 @@ var DirMkdir         = "/dir/mkdir"
 var DirRmdir         = "/dir/rmdir"
 var DirLs            = "/dir/ls"
 var DirStat          = "/dir/stat"
-var FileDownload     = "/file/download"
+var FileDownload     = "/file/download/stream"
 var FileUpload       = "/file/upload"
 var FileShare        = "/file/share"
 var FileReceive      = "/file/receive"
@@ -52,11 +57,12 @@ var DocEntryDel      = "/doc/entry/del"
 var DocLoadJson      = "/doc/loadjson"
 var DocIndexJson     = "/doc/indexjson"
 
+var ws = new W3CWebSocket("ws://localhost:9090/ws/v1/");
+
 // Let us open a web socket
 var username = "user_"+(Date.now() / 1000).toFixed(0)
 var password = "159263487"
 var podName = "pod1"
-var ws = new WebSocket("ws://localhost:9090/ws/v1/")
 
 function downloadFile() {
     var data = {
@@ -80,12 +86,25 @@ function uploadFile() {
             "block_size": "1Mb"
         }
     }
+
     ws.send(JSON.stringify(data))
-    ws.send(fileupload.files[0])
-    ws.send("done")
+
+
+    // in this case we read only one pice from the file in every given time
+    const source = fs.createReadStream("../resources/somefile.json")
+    //after that we set the stream variable we can start geting the file data
+    source.on('data', function (chunk) {
+        ws.send(chunk)
+    });
+    source.on('end', function () {
+        ws.send("done")
+    });
+    source.on('error', function (err) {
+        console.log("error" + err);//cant find file or something like that
+    });
 }
 
-userSignUp = function() {
+function userSignUp() {
     var data = {
         "event": UserSignup,
         "params": {
@@ -96,7 +115,7 @@ userSignUp = function() {
     ws.send(JSON.stringify(data))
 }
 
-userLogin = function() {
+function userLogin() {
     var data = {
         "event": UserLogin,
         "params": {
@@ -107,7 +126,7 @@ userLogin = function() {
     ws.send(JSON.stringify(data))
 }
 
-userLoggedin = function() {
+function userLoggedin() {
     var data = {
         "event": UserIsLoggedin,
         "params": {
@@ -118,7 +137,7 @@ userLoggedin = function() {
 }
 
 
-userPresent = function() {
+function userPresent() {
     var data = {
         "event": UserPresent,
         "params": {
@@ -128,7 +147,7 @@ userPresent = function() {
     ws.send(JSON.stringify(data))
 }
 
-userExport = function() {
+function userExport() {
     var data = {
         "event": UserExport,
         "params": {
@@ -138,7 +157,7 @@ userExport = function() {
     ws.send(JSON.stringify(data))
 }
 
-userStat = function() {
+function userStat() {
     var data = {
         "event": UserStat,
         "params": {
@@ -148,7 +167,7 @@ userStat = function() {
     ws.send(JSON.stringify(data))
 }
 
-podNew = function() {
+function podNew() {
     var data = {
         "event": PodNew,
         "params": {
@@ -159,7 +178,7 @@ podNew = function() {
     ws.send(JSON.stringify(data))
 }
 
-podOpen = function() {
+function podOpen() {
     var data = {
         "event": PodOpen,
         "params": {
@@ -170,14 +189,14 @@ podOpen = function() {
     ws.send(JSON.stringify(data))
 }
 
-podLs = function() {
+function podLs() {
     var data = {
         "event": PodLs,
     }
     ws.send(JSON.stringify(data))
 }
 
-mkDir = function() {
+function mkDir() {
     var data = {
         "event": DirMkdir,
         "params": {
@@ -188,7 +207,7 @@ mkDir = function() {
     ws.send(JSON.stringify(data))
 }
 
-rmDir = function() {
+function rmDir() {
     var data = {
         "event": DirRmdir,
         "params": {
@@ -199,7 +218,7 @@ rmDir = function() {
     ws.send(JSON.stringify(data))
 }
 
-dirLs = function() {
+function dirLs() {
     var data = {
         "event": DirLs,
         "params": {
@@ -210,7 +229,7 @@ dirLs = function() {
     ws.send(JSON.stringify(data))
 }
 
-dirStat = function() {
+function dirStat() {
     var data = {
         "event": DirStat,
         "params": {
@@ -221,7 +240,7 @@ dirStat = function() {
     ws.send(JSON.stringify(data))
 }
 
-dirPresent = function() {
+function dirPresent() {
     var data = {
         "event": DirIsPresent,
         "params": {
@@ -232,7 +251,7 @@ dirPresent = function() {
     ws.send(JSON.stringify(data))
 }
 
-stat = function() {
+function stat() {
     var data = {
         "event": FileStat,
         "params": {
@@ -244,7 +263,7 @@ stat = function() {
 }
 
 var table = "kv_1"
-kvCreate = function() {
+function kvCreate() {
     var data = {
         "event": KVCreate,
         "params": {
@@ -256,7 +275,7 @@ kvCreate = function() {
     ws.send(JSON.stringify(data))
 }
 
-kvList = function() {
+function kvList() {
     var data = {
         "event": KVList,
         "params": {
@@ -266,7 +285,7 @@ kvList = function() {
     ws.send(JSON.stringify(data))
 }
 
-kvOpen = function() {
+function kvOpen() {
     var data = {
         "event": KVOpen,
         "params": {
@@ -277,7 +296,7 @@ kvOpen = function() {
     ws.send(JSON.stringify(data))
 }
 
-kvEntryPut = function() {
+function kvEntryPut() {
     var data = {
         "event": KVEntryPut,
         "params": {
@@ -290,7 +309,7 @@ kvEntryPut = function() {
     ws.send(JSON.stringify(data))
 }
 
-kvCount = function() {
+function kvCount() {
     var data = {
         "event": KVCount,
         "params": {
@@ -301,7 +320,7 @@ kvCount = function() {
     ws.send(JSON.stringify(data))
 }
 
-kvGet = function() {
+function kvGet() {
     var data = {
         "event": KVEntryGet,
         "params": {
@@ -313,7 +332,7 @@ kvGet = function() {
     ws.send(JSON.stringify(data))
 }
 
-kvSeek = function() {
+function kvSeek() {
     var data = {
         "event": KVSeek,
         "params": {
@@ -325,7 +344,7 @@ kvSeek = function() {
     ws.send(JSON.stringify(data))
 }
 
-kvSeekNext = function() {
+function kvSeekNext() {
     var data = {
         "event": KVSeekNext,
         "params": {
@@ -336,7 +355,7 @@ kvSeekNext = function() {
     ws.send(JSON.stringify(data))
 }
 
-kvEntryDel = function() {
+function kvEntryDel() {
     var data = {
         "event": KVEntryDelete,
         "params": {
@@ -349,7 +368,7 @@ kvEntryDel = function() {
 }
 
 var docTable = "doc_1"
-docCreate = function() {
+function docCreate() {
     var data = {
         "event": DocCreate,
         "params": {
@@ -362,7 +381,7 @@ docCreate = function() {
     ws.send(JSON.stringify(data))
 }
 
-docLs = function() {
+function docLs() {
     var data = {
         "event": DocList,
         "params": {
@@ -373,7 +392,7 @@ docLs = function() {
     ws.send(JSON.stringify(data))
 }
 
-docOpen = function() {
+function docOpen() {
     var data = {
         "event": DocOpen,
         "params": {
@@ -384,7 +403,7 @@ docOpen = function() {
     ws.send(JSON.stringify(data))
 }
 
-docEntryPut = function() {
+function docEntryPut() {
     var data = {
         "event": DocEntryPut,
         "params": {
@@ -396,7 +415,7 @@ docEntryPut = function() {
     ws.send(JSON.stringify(data))
 }
 
-docEntryGet = function() {
+function docEntryGet() {
     var data = {
         "event": DocEntryGet,
         "params": {
@@ -408,7 +427,7 @@ docEntryGet = function() {
     ws.send(JSON.stringify(data))
 }
 
-docFind = function() {
+function docFind() {
     var data = {
         "event": DocFind,
         "params": {
@@ -420,7 +439,7 @@ docFind = function() {
     ws.send(JSON.stringify(data))
 }
 
-docCount = function() {
+function docCount() {
     var data = {
         "event": DocCount,
         "params": {
@@ -431,7 +450,7 @@ docCount = function() {
     ws.send(JSON.stringify(data))
 }
 
-docEntryDel = function() {
+function docEntryDel() {
     var data = {
         "event": DocEntryDel,
         "params": {
@@ -443,7 +462,7 @@ docEntryDel = function() {
     ws.send(JSON.stringify(data))
 }
 
-docDel = function() {
+function docDel() {
     var data = {
         "event": DocDelete,
         "params": {
@@ -455,62 +474,79 @@ docDel = function() {
 }
 
 WebSocketTest()
+functions = [
+    userPresent,
+    userLoggedin,
+    userStat,         
+    userSignUp,
+    userLogin,
+    userPresent,
+    userLoggedin,
+    userStat,
+    userExport,
+    podNew,
+    podOpen,
+    podLs,
+    mkDir,
+    rmDir,
+    dirLs,
+    dirStat,
+    dirPresent,
+    stat,
+    kvCreate,
+    kvList,
+    kvOpen,
+    kvEntryPut,
+    kvCount,
+    kvGet,
+    kvSeek,
+    kvSeekNext,
+    kvEntryDel,
+    docCreate,
+    docLs,
+    docOpen,
+    docEntryPut,
+    docEntryGet,
+    docFind,
+    docCount,
+    docEntryDel,
+    docDel,
+    uploadFile,
+    downloadFile,
+]
 
 function WebSocketTest() {
+    var count = 0
     ws.onopen = function() {  
-        userPresent()
-        userLoggedin()
-        userStat()            
-        userSignUp()
-        userLogin()
-        userPresent()
-        userLoggedin()
-        userStat()
-        userExport()
-        podNew()
-        podOpen()
-        podLs()
-        mkDir()
-        rmDir()
-        dirLs()
-        dirStat()
-        dirPresent()
-        stat()
-        kvCreate()
-        kvList()
-        kvOpen()
-        kvEntryPut()
-        kvCount()
-        kvGet()
-        kvSeek()
-        kvSeekNext()
-        kvEntryDel()
-        docCreate()
-        docLs()
-        docOpen()
-        docEntryPut()
-        docEntryGet()
-        docFind()
-        docCount()
-        docEntryDel()
-        docDel()
-        console.log("connected")
+       console.log("connected")
+       functions[count]()
     };
-    ws.onmessage = function (evt) {
+    let writer
+    downloadStarted = false
+    file_name = ""
+    ws.onmessage = function(evt) { 
         var received_msg = evt.data
-        if (evt.data instanceof Blob) {
-            const a = document.createElement('a')
-            a.href = window.URL.createObjectURL(evt.data)
-            a.download = 'file'
-            a.click()
+        if (evt.data instanceof ArrayBuffer) {
+            writer.write(Buffer.from(evt.data))
             return
         }
-
         var data = JSON.parse(received_msg) 
-        if (data.event == FileDownload && data.params["content_length"] != null) {
-            console.log("Download file size", data.params["content_length"])
+        if (data.event == FileDownload) {
+            if (downloadStarted == false) {
+                console.log("Download starting", data.params["content_length"])
+                file_name = data.params["file_name"]
+                writer = fs.createWriteStream("../resources/"+file_name) 
+                downloadStarted = true
+            } else {
+                writer.end()
+                downloadStarted = false
+            }
+        } else {
+            count++
+        functions[count]()
         }
         console.log(data)
+        
     };
     
     ws.onclose = function() { 
@@ -518,4 +554,3 @@ function WebSocketTest() {
     };
    
 }
-
