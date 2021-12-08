@@ -28,7 +28,7 @@ var DirRmdir         = "/dir/rmdir"
 var DirLs            = "/dir/ls"
 var DirStat          = "/dir/stat"
 var FileDownload     = "/file/download/stream"
-var FileUpload       = "/file/upload"
+var FileUpload       = "/file/upload/stream"
 var FileShare        = "/file/share"
 var FileReceive      = "/file/receive"
 var FileReceiveInfo  = "/file/receiveinfo"
@@ -42,7 +42,7 @@ var KVCount          = "/kv/count"
 var KVEntryPut       = "/kv/entry/put"
 var KVEntryGet       = "/kv/entry/get"
 var KVEntryDelete    = "/kv/entry/del"
-var KVLoadCSV        = "/kv/loadcsv"
+var KVLoadCSV        = "/kv/loadcsv/stream"
 var KVSeek           = "/kv/seek"
 var KVSeekNext       = "/kv/seek/next"
 var DocCreate        = "/doc/new"
@@ -54,7 +54,7 @@ var DocFind          = "/doc/find"
 var DocEntryPut      = "/doc/entry/put"
 var DocEntryGet      = "/doc/entry/get"
 var DocEntryDel      = "/doc/entry/del"
-var DocLoadJson      = "/doc/loadjson"
+var DocLoadJson      = "/doc/loadjson/stream"
 var DocIndexJson     = "/doc/indexjson"
 
 var ws = new W3CWebSocket("ws://localhost:9090/ws/v1/");
@@ -103,6 +103,90 @@ function uploadFile() {
         console.log("error" + err);//cant find file or something like that
     });
 }
+
+function loadCSV() {
+    var data = {
+        "event": KVLoadCSV,
+        "params": {
+            "pod_name": podName,
+            "file_name": "index.json",
+            "table_name": table,
+        }
+    }
+
+    ws.send(JSON.stringify(data))
+
+
+    // in this case we read only one pice from the file in every given time
+    const source = fs.createReadStream("../resources/somefile.csv")
+    //after that we set the stream variable we can start geting the file data
+    source.on('data', function (chunk) {
+        ws.send(chunk)
+    });
+    source.on('end', function () {
+        ws.send("done")
+    });
+    source.on('error', function (err) {
+        console.log("error" + err);//cant find file or something like that
+    });
+}
+
+function loadJSON() {
+    var data = {
+        "event": DocLoadJson,
+        "params": {
+            "pod_name": podName,
+            "file_name": "index.json",
+            "table_name": docTable,
+        }
+    }
+
+    ws.send(JSON.stringify(data))
+
+
+    // in this case we read only one pice from the file in every given time
+    const source = fs.createReadStream("../resources/somefile.json")
+    //after that we set the stream variable we can start geting the file data
+    source.on('data', function (chunk) {
+        ws.send(chunk)
+    });
+    source.on('end', function () {
+        ws.send("done")
+    });
+    source.on('error', function (err) {
+        console.log("error" + err);//cant find file or something like that
+    });
+}
+
+
+function uploadFile() {
+    var data = {
+        "event": FileUpload,
+        "params": {
+            "pod_name": podName,
+            "file_name": "index.json",
+            "dir_path":"/",
+            "block_size": "1Mb"
+        }
+    }
+
+    ws.send(JSON.stringify(data))
+
+
+    // in this case we read only one pice from the file in every given time
+    const source = fs.createReadStream("../resources/somefile.json")
+    //after that we set the stream variable we can start geting the file data
+    source.on('data', function (chunk) {
+        ws.send(chunk)
+    });
+    source.on('end', function () {
+        ws.send("done")
+    });
+    source.on('error', function (err) {
+        console.log("error" + err);//cant find file or something like that
+    });
+}
+
 
 function userSignUp() {
     var data = {
@@ -373,7 +457,7 @@ function docCreate() {
         "event": DocCreate,
         "params": {
             "pod_name": podName,
-            "table_name": table,
+            "table_name": docTable,
             "si": "first_name=string,age=number",
             "mutable": true
         }
@@ -386,7 +470,7 @@ function docLs() {
         "event": DocList,
         "params": {
             "pod_name": podName,
-            "table_name": table
+            "table_name": docTable
         }
     }
     ws.send(JSON.stringify(data))
@@ -397,7 +481,7 @@ function docOpen() {
         "event": DocOpen,
         "params": {
             "pod_name": podName,
-            "table_name": table
+            "table_name": docTable
         }
     }
     ws.send(JSON.stringify(data))
@@ -408,7 +492,7 @@ function docEntryPut() {
         "event": DocEntryPut,
         "params": {
             "pod_name": podName,
-            "table_name": table,
+            "table_name": docTable,
             "doc":  `{"id":"1", "first_name": "Hello1", "age": 11}`,
         }
     }
@@ -420,7 +504,7 @@ function docEntryGet() {
         "event": DocEntryGet,
         "params": {
             "pod_name": podName,
-            "table_name": table,
+            "table_name": docTable,
             "id":  "1",
         }
     }
@@ -432,7 +516,7 @@ function docFind() {
         "event": DocFind,
         "params": {
             "pod_name": podName,
-            "table_name": table,
+            "table_name": docTable,
             "expr":  `age>10`,
         }
     }
@@ -444,7 +528,7 @@ function docCount() {
         "event": DocCount,
         "params": {
             "pod_name": podName,
-            "table_name": table,
+            "table_name": docTable,
         }
     }
     ws.send(JSON.stringify(data))
@@ -455,7 +539,7 @@ function docEntryDel() {
         "event": DocEntryDel,
         "params": {
             "pod_name": podName,
-            "table_name": table,
+            "table_name": docTable,
             "id":  "1",
         }
     }
@@ -467,7 +551,7 @@ function docDel() {
         "event": DocDelete,
         "params": {
             "pod_name": podName,
-            "table_name": table,
+            "table_name": docTable,
         }
     }
     ws.send(JSON.stringify(data))
@@ -501,6 +585,7 @@ functions = [
     kvGet,
     kvSeek,
     kvSeekNext,
+    loadCSV,
     kvEntryDel,
     docCreate,
     docLs,
@@ -508,6 +593,7 @@ functions = [
     docEntryPut,
     docEntryGet,
     docFind,
+    loadJSON,
     docCount,
     docEntryDel,
     docDel,

@@ -504,8 +504,6 @@ func main() {
 		Params: dfsCommon.FileRequest{
 			PodName:   podName,
 			TableName: table,
-			DirPath:   "/",
-			BlockSize: "1Mb",
 			FileName:  "somefile.csv",
 		},
 	}
@@ -760,8 +758,6 @@ func main() {
 		Params: dfsCommon.FileRequest{
 			PodName:   podName,
 			TableName: docTable,
-			DirPath:   "/",
-			BlockSize: "1Mb",
 			FileName:  "somefile.json",
 		},
 	}
