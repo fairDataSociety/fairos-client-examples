@@ -34,7 +34,9 @@ Available events
     "/dir/ls"
     "/dir/stat"
     "/file/download"
+    "/file/download/stream"
     "/file/upload"
+    "/file/upload/stream"
     "/file/share"
     "/file/receive"
     "/file/receiveinfo"
@@ -49,6 +51,7 @@ Available events
     "/kv/entry/get"
     "/kv/entry/del"
     "/kv/loadcsv"
+    "/kv/loadcsv/stream"
     "/kv/seek"
     "/kv/seek/next"
     "/doc/new"
@@ -61,6 +64,7 @@ Available events
     "/doc/entry/get"
     "/doc/entry/del"
     "/doc/loadjson"
+    "/doc/loadjson/stream"
     "/doc/indexjson"
 ```
 
@@ -119,14 +123,35 @@ Currently, we have a total of three events that deals with file upload.
 ```
 
 To upload a file via a websocket connection we need to first request for the event then send the file as `BinaryMessage`
-in subsequent requests.
+in following request.
 
 > **_NOTE:_** Please refer to the client implementation for more details. 
+
+### File upload (stream)
+
+Currently, we have a total of three events that deals with file upload via streaming.
+```
+    "/file/upload/stream"
+    "/doc/loadjson/stream"
+    "/kv/loadcsv/stream"
+```
+
+To upload a file via streaming using a websocket connection we need to first request for the event then send the file as `BinaryMessage`
+in subsequent requests. After the file is sent to the server, we need to send a blank message via the websocket connection to let the server 
+know that upload is done.
+
+> **_NOTE:_** Please refer to the client implementation for more details.
 
 ### File download
 
 Event `/file/download` deals with file download. Server will first send event response for `/event/download` 
-then send the file content as `BinaryMessage` or `Blob` in subsequent responses.
+then send the file content as `BinaryMessage` or `Blob` in the following response.
+
+### File download (stream)
+
+Event `/file/download/stream` will stream file to be downloaded. Server will first send event response for `/event/download`
+then send the file content as `BinaryMessage` or `Blob` in the subsequent responses. The first response will contain the `content_length`. 
+We can compare the `content_length` with the data being sent with the responses and know how much we have downloaded.
 
 > **_NOTE:_** Please refer to the client implementation for more details. 
  
