@@ -59,7 +59,6 @@ var DocIndexJson     = "/doc/indexjson"
 
 var ws = new W3CWebSocket("ws://localhost:9090/ws/v1/");
 
-// Let us open a web socket
 var username = "user_"+(Date.now() / 1000).toFixed(0)
 var password = "159263487"
 var podName = "pod1"
@@ -77,113 +76,87 @@ function downloadFile() {
 
 
 function uploadFile() {
+    var pathOfFile = "../resources/somefile.json"
+    var stat = fs.statSync(pathOfFile);
+    console.log(stat, stat.size)
     var data = {
         "event": FileUpload,
         "params": {
             "pod_name": podName,
             "file_name": "index.json",
             "dir_path":"/",
-            "block_size": "1Mb"
+            "block_size": "1Mb",
+            "content_length": stat.size.toString()
         }
     }
 
     ws.send(JSON.stringify(data))
 
 
-    // in this case we read only one pice from the file in every given time
-    const source = fs.createReadStream("../resources/somefile.json")
-    //after that we set the stream variable we can start geting the file data
+    const source = fs.createReadStream(pathOfFile)
     source.on('data', function (chunk) {
         ws.send(chunk)
     });
     source.on('end', function () {
-        ws.send("done")
+        
     });
     source.on('error', function (err) {
-        console.log("error" + err);//cant find file or something like that
+        console.log("error" + err);
     });
 }
 
 function loadCSV() {
+    var pathOfFile = "../resources/somefile.csv"
+    var stat = fs.statSync(pathOfFile);
     var data = {
         "event": KVLoadCSV,
         "params": {
             "pod_name": podName,
             "file_name": "index.json",
             "table_name": table,
+            "content_length": stat.size.toString()
         }
     }
 
     ws.send(JSON.stringify(data))
 
-
-    // in this case we read only one pice from the file in every given time
-    const source = fs.createReadStream("../resources/somefile.csv")
-    //after that we set the stream variable we can start geting the file data
+    const source = fs.createReadStream(pathOfFile)
     source.on('data', function (chunk) {
         ws.send(chunk)
     });
     source.on('end', function () {
-        ws.send("done")
+        
     });
     source.on('error', function (err) {
-        console.log("error" + err);//cant find file or something like that
+        console.log("error" + err);
     });
 }
 
 function loadJSON() {
+    var pathOfFile = "../resources/somefile.json"
+    var stat = fs.statSync(pathOfFile);
+    console.log(stat.size.toString())
     var data = {
         "event": DocLoadJson,
         "params": {
             "pod_name": podName,
             "file_name": "index.json",
             "table_name": docTable,
+            "content_length": stat.size.toString()
         }
     }
 
     ws.send(JSON.stringify(data))
 
-
-    // in this case we read only one pice from the file in every given time
     const source = fs.createReadStream("../resources/somefile.json")
-    //after that we set the stream variable we can start geting the file data
     source.on('data', function (chunk) {
         ws.send(chunk)
     });
     source.on('end', function () {
-        ws.send("done")
+        
     });
     source.on('error', function (err) {
-        console.log("error" + err);//cant find file or something like that
-    });
-}
-
-
-function uploadFile() {
-    var data = {
-        "event": FileUpload,
-        "params": {
-            "pod_name": podName,
-            "file_name": "index.json",
-            "dir_path":"/",
-            "block_size": "1Mb"
-        }
-    }
-
-    ws.send(JSON.stringify(data))
-
-
-    // in this case we read only one pice from the file in every given time
-    const source = fs.createReadStream("../resources/somefile.json")
-    //after that we set the stream variable we can start geting the file data
-    source.on('data', function (chunk) {
-        ws.send(chunk)
-    });
-    source.on('end', function () {
-        ws.send("done")
-    });
-    source.on('error', function (err) {
-        console.log("error" + err);//cant find file or something like that
+        console.log("error" + err);
     });
 }
 

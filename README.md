@@ -137,8 +137,7 @@ Currently, we have a total of three events that deals with file upload via strea
 ```
 
 To upload a file via streaming using a websocket connection we need to first request for the event then send the file as `BinaryMessage`
-in subsequent requests. After the file is sent to the server, we need to send a blank message via the websocket connection to let the server 
-know that upload is done.
+in subsequent requests. The first request must have `content_length` as a parameter stating the size of the file, otherqwise upload will fail.
 
 > **_NOTE:_** Please refer to the client implementation for more details.
 
