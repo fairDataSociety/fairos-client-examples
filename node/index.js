@@ -2,70 +2,23 @@ fs = require('fs');
 var W3CWebSocket = require('websocket').w3cwebsocket;
 const websocketStream = require('websocket-stream/stream');
 
-
-var UserSignup       = "/user/signup"
-var UserLogin        = "/user/login"
-var UserImport       = "/user/import"
-var UserPresent      = "/user/present"
-var UserIsLoggedin   = "/user/isloggedin"
-var UserLogout       = "/user/logout"
-var UserExport       = "/user/export"
-var UserDelete       = "/user/delete"
-var UserStat         = "/user/stat"
-var PodNew           = "/pod/new"
-var PodOpen          = "/pod/open"
-var PodClose         = "/pod/close"
-var PodSync          = "/pod/sync"
-var PodDelete        = "/pod/delete"
-var PodLs            = "/pod/ls"
-var PodStat          = "/pod/stat"
-var PodShare         = "/pod/share"
-var PodReceive       = "/pod/receive"
-var PodReceiveInfo   = "/pod/receiveinfo"
-var DirIsPresent     = "/dir/present"
-var DirMkdir         = "/dir/mkdir"
-var DirRmdir         = "/dir/rmdir"
-var DirLs            = "/dir/ls"
-var DirStat          = "/dir/stat"
-var FileDownload     = "/file/download/stream"
-var FileUpload       = "/file/upload/stream"
-var FileShare        = "/file/share"
-var FileReceive      = "/file/receive"
-var FileReceiveInfo  = "/file/receiveinfo"
-var FileDelete       = "/file/delete"
-var FileStat         = "/file/stat"
-var KVCreate         = "/kv/new"
-var KVList           = "/kv/ls"
-var KVOpen           = "/kv/open"
-var KVDelete         = "/kv/delete"
-var KVCount          = "/kv/count"
-var KVEntryPut       = "/kv/entry/put"
-var KVEntryGet       = "/kv/entry/get"
-var KVEntryDelete    = "/kv/entry/del"
-var KVLoadCSV        = "/kv/loadcsv/stream"
-var KVSeek           = "/kv/seek"
-var KVSeekNext       = "/kv/seek/next"
-var DocCreate        = "/doc/new"
-var DocList          = "/doc/ls"
-var DocOpen          = "/doc/open"
-var DocCount         = "/doc/count"
-var DocDelete        = "/doc/delete"
-var DocFind          = "/doc/find"
-var DocEntryPut      = "/doc/entry/put"
-var DocEntryGet      = "/doc/entry/get"
-var DocEntryDel      = "/doc/entry/del"
-var DocLoadJson      = "/doc/loadjson/stream"
-var DocIndexJson     = "/doc/indexjson"
-
+// Establish a websocket connection
 var ws = new W3CWebSocket("ws://localhost:9090/ws/v1/");
 
+// Import events
+var events = require('./events');
+
+/*
+    The following code block is for the demo only
+    dont hard code password in your project
+*/
 var username = "user_"+(Date.now() / 1000).toFixed(0)
 var password = "159263487"
 var podName = "pod1"
 
 function downloadFile() {
     var data = {
-        "event": FileDownload,
+        "event": events.FileDownload,
         "params": {
             "pod_name": podName,
             "file_path": "/index.json"
@@ -74,13 +27,11 @@ function downloadFile() {
     ws.send(JSON.stringify(data))
 }
 
-
 function uploadFile() {
     var pathOfFile = "../resources/somefile.json"
     var stat = fs.statSync(pathOfFile);
-    console.log(stat, stat.size)
     var data = {
-        "event": FileUpload,
+        "event": events.FileUpload,
         "params": {
             "pod_name": podName,
             "file_name": "index.json",
@@ -92,13 +43,12 @@ function uploadFile() {
 
     ws.send(JSON.stringify(data))
 
-
     const source = fs.createReadStream(pathOfFile)
     source.on('data', function (chunk) {
         ws.send(chunk)
     });
     source.on('end', function () {
-        
+
     });
     source.on('error', function (err) {
         console.log("error" + err);
@@ -109,7 +59,7 @@ function loadCSV() {
     var pathOfFile = "../resources/somefile.csv"
     var stat = fs.statSync(pathOfFile);
     var data = {
-        "event": KVLoadCSV,
+        "event": events.KVLoadCSV,
         "params": {
             "pod_name": podName,
             "file_name": "index.json",
@@ -125,7 +75,7 @@ function loadCSV() {
         ws.send(chunk)
     });
     source.on('end', function () {
-        
+
     });
     source.on('error', function (err) {
         console.log("error" + err);
@@ -137,7 +87,7 @@ function loadJSON() {
     var stat = fs.statSync(pathOfFile);
     console.log(stat.size.toString())
     var data = {
-        "event": DocLoadJson,
+        "event": events.DocLoadJson,
         "params": {
             "pod_name": podName,
             "file_name": "index.json",
@@ -153,7 +103,7 @@ function loadJSON() {
         ws.send(chunk)
     });
     source.on('end', function () {
-        
+
     });
     source.on('error', function (err) {
         console.log("error" + err);
@@ -163,7 +113,7 @@ function loadJSON() {
 
 function userSignUp() {
     var data = {
-        "event": UserSignup,
+        "event": events.UserSignup,
         "params": {
             "user_name": username,
             "password": password
@@ -174,7 +124,7 @@ function userSignUp() {
 
 function userLogin() {
     var data = {
-        "event": UserLogin,
+        "event": events.UserLogin,
         "params": {
             "user_name": username,
             "password": password
@@ -185,7 +135,7 @@ function userLogin() {
 
 function userLoggedin() {
     var data = {
-        "event": UserIsLoggedin,
+        "event": events.UserIsLoggedin,
         "params": {
             "user_name": username,
         }
@@ -196,17 +146,18 @@ function userLoggedin() {
 
 function userPresent() {
     var data = {
-        "event": UserPresent,
+        "event": events.UserPresent,
         "params": {
             "user_name": username,
         }
     }
+    console.log(data)
     ws.send(JSON.stringify(data))
 }
 
 function userExport() {
     var data = {
-        "event": UserExport,
+        "event": events.UserExport,
         "params": {
             "user_name": username,
         }
@@ -216,7 +167,7 @@ function userExport() {
 
 function userStat() {
     var data = {
-        "event": UserStat,
+        "event": events.UserStat,
         "params": {
             "user_name": username,
         }
@@ -226,7 +177,7 @@ function userStat() {
 
 function podNew() {
     var data = {
-        "event": PodNew,
+        "event": events.PodNew,
         "params": {
             "pod_name": podName,
             "password": password
@@ -237,7 +188,7 @@ function podNew() {
 
 function podOpen() {
     var data = {
-        "event": PodOpen,
+        "event": events.PodOpen,
         "params": {
             "pod_name": podName,
             "password": password
@@ -248,14 +199,14 @@ function podOpen() {
 
 function podLs() {
     var data = {
-        "event": PodLs,
+        "event": events.PodLs,
     }
     ws.send(JSON.stringify(data))
 }
 
 function mkDir() {
     var data = {
-        "event": DirMkdir,
+        "event": events.DirMkdir,
         "params": {
             "pod_name": podName,
             "dir_path": "/d"
@@ -266,7 +217,7 @@ function mkDir() {
 
 function rmDir() {
     var data = {
-        "event": DirRmdir,
+        "event": events.DirRmdir,
         "params": {
             "pod_name": podName,
             "dir_path": "/d"
@@ -277,7 +228,7 @@ function rmDir() {
 
 function dirLs() {
     var data = {
-        "event": DirLs,
+        "event": events.DirLs,
         "params": {
             "pod_name": podName,
             "dir_path": "/"
@@ -288,7 +239,7 @@ function dirLs() {
 
 function dirStat() {
     var data = {
-        "event": DirStat,
+        "event": events.DirStat,
         "params": {
             "pod_name": podName,
             "dir_path": "/d"
@@ -299,7 +250,7 @@ function dirStat() {
 
 function dirPresent() {
     var data = {
-        "event": DirIsPresent,
+        "event": events.DirIsPresent,
         "params": {
             "pod_name": podName,
             "dir_path": "/d"
@@ -310,7 +261,7 @@ function dirPresent() {
 
 function stat() {
     var data = {
-        "event": FileStat,
+        "event": events.FileStat,
         "params": {
             "pod_name": podName,
             "file_path": "/index.json"
@@ -322,7 +273,7 @@ function stat() {
 var table = "kv_1"
 function kvCreate() {
     var data = {
-        "event": KVCreate,
+        "event": events.KVCreate,
         "params": {
             "pod_name": podName,
             "table_name": table,
@@ -334,7 +285,7 @@ function kvCreate() {
 
 function kvList() {
     var data = {
-        "event": KVList,
+        "event": events.KVList,
         "params": {
             "pod_name": podName
         }
@@ -344,7 +295,7 @@ function kvList() {
 
 function kvOpen() {
     var data = {
-        "event": KVOpen,
+        "event": events.KVOpen,
         "params": {
             "pod_name": podName,
             "table_name": table,
@@ -355,7 +306,7 @@ function kvOpen() {
 
 function kvEntryPut() {
     var data = {
-        "event": KVEntryPut,
+        "event": events.KVEntryPut,
         "params": {
             "pod_name": podName,
             "table_name": table,
@@ -368,7 +319,7 @@ function kvEntryPut() {
 
 function kvCount() {
     var data = {
-        "event": KVCount,
+        "event": events.KVCount,
         "params": {
             "pod_name": podName,
             "table_name": table,
@@ -379,7 +330,7 @@ function kvCount() {
 
 function kvGet() {
     var data = {
-        "event": KVEntryGet,
+        "event": events.KVEntryGet,
         "params": {
             "pod_name": podName,
             "table_name": table,
@@ -391,7 +342,7 @@ function kvGet() {
 
 function kvSeek() {
     var data = {
-        "event": KVSeek,
+        "event": events.KVSeek,
         "params": {
             "pod_name": podName,
             "table_name": table,
@@ -403,7 +354,7 @@ function kvSeek() {
 
 function kvSeekNext() {
     var data = {
-        "event": KVSeekNext,
+        "event": events.KVSeekNext,
         "params": {
             "pod_name": podName,
             "table_name": table,
@@ -414,7 +365,7 @@ function kvSeekNext() {
 
 function kvEntryDel() {
     var data = {
-        "event": KVEntryDelete,
+        "event": events.KVEntryDelete,
         "params": {
             "pod_name": podName,
             "table_name": table,
@@ -427,7 +378,7 @@ function kvEntryDel() {
 var docTable = "doc_1"
 function docCreate() {
     var data = {
-        "event": DocCreate,
+        "event": events.DocCreate,
         "params": {
             "pod_name": podName,
             "table_name": docTable,
@@ -440,7 +391,7 @@ function docCreate() {
 
 function docLs() {
     var data = {
-        "event": DocList,
+        "event": events.DocList,
         "params": {
             "pod_name": podName,
             "table_name": docTable
@@ -451,7 +402,7 @@ function docLs() {
 
 function docOpen() {
     var data = {
-        "event": DocOpen,
+        "event": events.DocOpen,
         "params": {
             "pod_name": podName,
             "table_name": docTable
@@ -462,7 +413,7 @@ function docOpen() {
 
 function docEntryPut() {
     var data = {
-        "event": DocEntryPut,
+        "event": events.DocEntryPut,
         "params": {
             "pod_name": podName,
             "table_name": docTable,
@@ -474,7 +425,7 @@ function docEntryPut() {
 
 function docEntryGet() {
     var data = {
-        "event": DocEntryGet,
+        "event": events.DocEntryGet,
         "params": {
             "pod_name": podName,
             "table_name": docTable,
@@ -486,7 +437,7 @@ function docEntryGet() {
 
 function docFind() {
     var data = {
-        "event": DocFind,
+        "event": events.DocFind,
         "params": {
             "pod_name": podName,
             "table_name": docTable,
@@ -498,7 +449,7 @@ function docFind() {
 
 function docCount() {
     var data = {
-        "event": DocCount,
+        "event": events.DocCount,
         "params": {
             "pod_name": podName,
             "table_name": docTable,
@@ -509,7 +460,7 @@ function docCount() {
 
 function docEntryDel() {
     var data = {
-        "event": DocEntryDel,
+        "event": events.DocEntryDel,
         "params": {
             "pod_name": podName,
             "table_name": docTable,
@@ -521,7 +472,7 @@ function docEntryDel() {
 
 function docDel() {
     var data = {
-        "event": DocDelete,
+        "event": events.DocDelete,
         "params": {
             "pod_name": podName,
             "table_name": docTable,
@@ -531,6 +482,7 @@ function docDel() {
 }
 
 WebSocketTest()
+
 functions = [
     userPresent,
     userLoggedin,
@@ -590,7 +542,7 @@ function WebSocketTest() {
             return
         }
         var data = JSON.parse(received_msg) 
-        if (data.event == FileDownload) {
+        if (data.event == events.FileDownload) {
             if (downloadStarted == false) {
                 console.log("Download starting", data.params["content_length"])
                 file_name = data.params["file_name"]
@@ -602,10 +554,9 @@ function WebSocketTest() {
             }
         } else {
             count++
-        functions[count]()
+            functions[count]()
         }
         console.log(data)
-        
     };
     
     ws.onclose = function() { 
