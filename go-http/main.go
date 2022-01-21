@@ -16,6 +16,10 @@ import (
 	dfsCommon "github.com/fairdatasociety/fairOS-dfs/cmd/common"
 )
 
+var (
+	base = "http://localhost:9090/v1"
+)
+
 func main() {
 
 	interrupt := make(chan os.Signal, 1)
@@ -36,7 +40,7 @@ func main() {
 	}
 
 	// user signup
-	signupRequestDataHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://localhost:9090/v1%s", string(dfsCommon.UserSignup)),  bytes.NewBuffer(signupRequestData))
+	signupRequestDataHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.UserSignup)),  bytes.NewBuffer(signupRequestData))
 	if err != nil {
 		return
 	}
@@ -47,18 +51,20 @@ func main() {
 		fmt.Println("Error ", err.Error(), time.Now())
 		return
 	}
+
 	err = signupRequestResp.Body.Close()
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
 		return
 	}
 	if signupRequestResp.StatusCode != http.StatusCreated {
-		fmt.Println("Signup failed")
+		fmt.Println("Signup failed", signupRequestResp.StatusCode)
+		return
 	}
 
 
 	// Login
-	userLoginHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://localhost:9090/v1%s", string(dfsCommon.UserLogin)),  bytes.NewBuffer(signupRequestData))
+	userLoginHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.UserLogin)),  bytes.NewBuffer(signupRequestData))
 	if err != nil {
 		return
 	}
@@ -90,7 +96,7 @@ func main() {
 	}
 
 	// pod new
-	podHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://localhost:9090/v1%s", string(dfsCommon.PodNew)),  bytes.NewBuffer(podReqData,))
+	podHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.PodNew)),  bytes.NewBuffer(podReqData,))
 	if err != nil {
 		return
 	}
@@ -112,7 +118,7 @@ func main() {
 	}
 
 	// pod open
-	podOpenHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://localhost:9090/v1%s", string(dfsCommon.PodOpen)),  bytes.NewBuffer(podReqData,))
+	podOpenHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.PodOpen)),  bytes.NewBuffer(podReqData,))
 	if err != nil {
 		return
 	}
@@ -160,7 +166,7 @@ func main() {
 			return
 		}
 		contentType := fmt.Sprintf("multipart/form-data;boundary=%v", uploadWriter.Boundary())
-		uploadHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://localhost:9090/v1%s", string(dfsCommon.FileUpload)), uploadBuf)
+		uploadHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.FileUpload)), uploadBuf)
 		if err != nil {
 			fmt.Println("Error ", err.Error(), time.Now())
 			return
@@ -196,7 +202,7 @@ func main() {
 			return
 		}
 		contentType = fmt.Sprintf("multipart/form-data;boundary=%v", downloadWriter.Boundary())
-		downloadHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://localhost:9090/v1%s", string(dfsCommon.FileDownload)), downloadBuf)
+		downloadHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.FileDownload)), downloadBuf)
 		if err != nil {
 			fmt.Println("Error", err.Error(), time.Now())
 			return
