@@ -1,4 +1,4 @@
-module github.com/fairDataSociety/fairos-websocket-client/go-http
+module github.com/fairDataSociety/fairos-client-examples/go-http
 
 go 1.17
 

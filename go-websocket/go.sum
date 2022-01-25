@@ -160,8 +160,6 @@ github.com/ethersphere/bmt v0.1.4/go.mod h1:Yd8ft1U69WDuHevZc/rwPxUv1rzPSMpMnS6x
 github.com/ethersphere/langos v1.0.0/go.mod h1:dlcN2j4O8sQ+BlCaxeBu43bgr4RQ+inJ+pHwLeZg5Tw=
 github.com/ethersphere/manifest v0.3.6/go.mod h1:frSxQFT67hQvmTN5CBtgVuqHzGQpg0V0oIIm/B3Am+U=
 github.com/ethersphere/sw3-bindings/v2 v2.1.0/go.mod h1:ozMVBZZlAirS/FcUpFwzV60v8gC0nVbA/5ZXtCX3xCc=
-github.com/fairdatasociety/fairOS-dfs v0.6.3-0.20211130135815-abb41af2945e h1:lLTbuJ+7ej89rLTKTa3EqE/l/MQzHvElMyqQJLBvEzk=
-github.com/fairdatasociety/fairOS-dfs v0.6.3-0.20211130135815-abb41af2945e/go.mod h1:o6NxudjRxkAxwL4WZ++HzSt0uS99i5ObVbG6Q55zGMQ=
 github.com/fairdatasociety/fairOS-dfs v0.6.3-0.20211202125442-c3f0b7d306d9 h1:tt++pkBIgTfTiUcNi6iXqh2GLTD5y7EHFhenEo4Q+PY=
 github.com/fairdatasociety/fairOS-dfs v0.6.3-0.20211202125442-c3f0b7d306d9/go.mod h1:o6NxudjRxkAxwL4WZ++HzSt0uS99i5ObVbG6Q55zGMQ=
 github.com/fatih/color v1.3.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
