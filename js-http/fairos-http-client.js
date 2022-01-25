@@ -2,7 +2,7 @@
 var username = "user_"+(Date.now() / 1000).toFixed(0)
 var password = "159263487"
 var podName = "pod1"
-var host = "https://localhost:9090/v1/";
+var host = "http://localhost:9090/v1";
 
 function downloadFile() {
     var data = {
