@@ -1,8 +1,8 @@
 // Let us define properties needed for API calls
-var username = "user_"+(Date.now() / 1000).toFixed(0)
-var password = "159263487"
-var podName = "pod1"
-var host = "http://localhost:9090/v1";
+const username = "user_"+(Date.now() / 1000).toFixed(0)
+const password = "159263487"
+const podName = "pod1"
+const host = "http://localhost:9090/v1";
 
 function downloadFile() {
     var data = {
