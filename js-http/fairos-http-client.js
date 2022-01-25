@@ -389,7 +389,7 @@ var docTable = "doc_1"
 docCreate = function() {
     var data = {
         "pod_name": podName,
-        "table_name": table,
+        "table_name": docTable,
         "si": "first_name=string,age=number",
         "mutable": true
     };
@@ -405,8 +405,7 @@ docCreate = function() {
 
 docLs = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table
+        "pod_name": podName
     };
     return fetch(host + "/doc/ls" + '?' + new URLSearchParams(data), {
         method: "GET",
@@ -420,7 +419,7 @@ docLs = function() {
 docOpen = function() {
     var data = {
         "pod_name": podName,
-        "table_name": table
+        "table_name": docTable
     };
     return fetch(host + "/doc/open", {
         method: "POST",
@@ -435,7 +434,7 @@ docOpen = function() {
 docEntryPut = function() {
     var data = {
         "pod_name": podName,
-        "table_name": table,
+        "table_name": docTable,
         "doc":  `{"id":"1", "first_name": "Hello1", "age": 11}`,
     };
     return fetch(host + "/doc/entry/put", {
@@ -451,7 +450,7 @@ docEntryPut = function() {
 docEntryGet = function() {
     var data = {
         "pod_name": podName,
-        "table_name": table,
+        "table_name": docTable,
         "id":  "1",
     };
     return fetch(host + "/doc/entry/get" + '?' + new URLSearchParams(data), {
@@ -466,7 +465,7 @@ docEntryGet = function() {
 docFind = function() {
     var data = {
         "pod_name": podName,
-        "table_name": table,
+        "table_name": docTable,
         "expr":  `age>10`,
     };
     return fetch(host + "/doc/find" + '?' + new URLSearchParams(data), {
@@ -481,7 +480,7 @@ docFind = function() {
 docCount = function() {
     var data = {
         "pod_name": podName,
-        "table_name": table,
+        "table_name": docTable,
     };
     return fetch(host + "/doc/count", {
         method: "POST",
@@ -496,7 +495,7 @@ docCount = function() {
 docEntryDel = function() {
     var data = {
         "pod_name": podName,
-        "table_name": table,
+        "table_name": docTable,
         "id":  "1",
     };
     return fetch(host + "/doc/entry/del", {
@@ -512,7 +511,7 @@ docEntryDel = function() {
 docDel = function() {
     var data = {
         "pod_name": podName,
-        "table_name": table,
+        "table_name": docTable,
     };
     return fetch(host + "/doc/delete", {
         method: "DELETE",
@@ -551,7 +550,7 @@ function apiTest() {
         .then(userLoggedin)
         .then(handleResponse)
         .then(userStat)
-        .then(handleResponse)            
+        .then(handleResponse)
         .then(userSignUp)
         .then(handleResponse)
         .then(userLogin)
