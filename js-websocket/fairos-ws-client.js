@@ -24,6 +24,7 @@ var DirLs            = "/dir/ls"
 var DirStat          = "/dir/stat"
 var FileDownload     = "/file/download"
 var FileUpload       = "/file/upload"
+var FileUploadStream = "/file/upload/stream"
 var FileShare        = "/file/share"
 var FileReceive      = "/file/receive"
 var FileReceiveInfo  = "/file/receiveinfo"
@@ -69,6 +70,47 @@ function downloadFile() {
     ws.send(JSON.stringify(data))
 }
 
+
+function uploadFileStream() {
+    var oFile = document.getElementById('fileupload').files[0]
+    var reader = new FileReader();
+    var read = 0;
+    var unit = 1024 * 512;
+    var blob;
+
+    var data = {
+        "event": FileUploadStream,
+        "params": {
+            "pod_name": podName,
+            "file_name": "image.pdf",
+            "dir_path":"/",
+            "block_size": "1Mb",
+            "content_length": oFile.size.toString()
+        }
+    }
+    ws.send(JSON.stringify(data))
+
+
+    if (oFile.size < read + unit) {
+        blob = oFile.slice(read, oFile.size);
+        console.log(blob)
+        ws.send(blob)
+    } else {
+        while (1) {
+            if (read < oFile.size && read + unit < oFile.size) {
+                blob = oFile.slice(read, read + unit);
+                console.log(blob)
+                ws.send(blob)
+                read += unit;
+            } else {
+                blob = oFile.slice(read, oFile.size);
+                console.log(blob)
+                ws.send(blob)
+                break
+            }
+        }
+    }
+}
 
 function uploadFile() {
     var data = {
