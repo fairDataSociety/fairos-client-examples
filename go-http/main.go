@@ -16,6 +16,10 @@ import (
 	dfsCommon "github.com/fairdatasociety/fairOS-dfs/cmd/common"
 )
 
+type PresentResponse struct {
+	Present bool `json:"present"`
+}
+
 var (
 	base = "http://localhost:9090/v1"
 )
@@ -27,7 +31,7 @@ func main() {
 
 	podName := "pod_16425667351"
 	password := "159263487"
-	username := "user_1642566083"
+	username := "user_1642566086"
 	c := http.Client{Timeout: time.Duration(1) * time.Minute}
 	signupRequest := &dfsCommon.UserRequest{
 		UserName: username,
@@ -39,29 +43,48 @@ func main() {
 		return
 	}
 
-	// user signup
-	signupRequestDataHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.UserSignup)),  bytes.NewBuffer(signupRequestData))
-	if err != nil {
-		return
-	}
-	signupRequestDataHttpReq.Header.Add("Content-Type", "application/json")
-	signupRequestDataHttpReq.Header.Add("Content-Length", strconv.Itoa(len(signupRequestData)))
-	signupRequestResp, err := c.Do(signupRequestDataHttpReq)
+	// is User present
+	isUserPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s%s?user_name=%s", base, string(dfsCommon.UserPresent), signupRequest.UserName),  nil)
+	isUserPresentResp, err := c.Do(isUserPresentReq)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
 		return
 	}
-
-	err = signupRequestResp.Body.Close()
+	bodyBytes, err := io.ReadAll(isUserPresentResp.Body)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
 		return
 	}
-	if signupRequestResp.StatusCode != http.StatusCreated {
-		fmt.Println("Signup failed", signupRequestResp.StatusCode)
+	presentResp := &PresentResponse{}
+	err = json.Unmarshal(bodyBytes, presentResp)
+	if err != nil {
+		fmt.Println("Error ", err.Error(), time.Now())
 		return
 	}
+	if !presentResp.Present {
+		// user signup
+		signupRequestDataHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.UserSignup)),  bytes.NewBuffer(signupRequestData))
+		if err != nil {
+			return
+		}
+		signupRequestDataHttpReq.Header.Add("Content-Type", "application/json")
+		signupRequestDataHttpReq.Header.Add("Content-Length", strconv.Itoa(len(signupRequestData)))
+		signupRequestResp, err := c.Do(signupRequestDataHttpReq)
+		if err != nil {
+			fmt.Println("Error ", err.Error(), time.Now())
+			return
+		}
 
+		err = signupRequestResp.Body.Close()
+		if err != nil {
+			fmt.Println("Error ", err.Error(), time.Now())
+			return
+		}
+		if signupRequestResp.StatusCode != http.StatusCreated {
+			fmt.Println("Signup failed", signupRequestResp.StatusCode)
+			return
+		}
+	}
 
 	// Login
 	userLoginHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.UserLogin)),  bytes.NewBuffer(signupRequestData))
@@ -95,49 +118,71 @@ func main() {
 		return
 	}
 
-	// pod new
-	podHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.PodNew)),  bytes.NewBuffer(podReqData,))
-	if err != nil {
-		return
-	}
-	podHttpReq.Header.Add("Content-Type", "application/json")
-	podHttpReq.Header.Add("Content-Length", strconv.Itoa(len(podReqData)))
-	podHttpReq.Header.Set("Cookie", cookie[0])
-	podNewResp, err := c.Do(podHttpReq)
+	// is pod present
+	isPodPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/pod/present?pod_name=%s", base, podName),  nil)
+	isPodPresentResp, err := c.Do(isPodPresentReq)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
 		return
 	}
-	err = podNewResp.Body.Close()
+	podPresentBodyBytes, err := io.ReadAll(isPodPresentResp.Body)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
 		return
 	}
-	if podNewResp.StatusCode != http.StatusCreated {
-		fmt.Println("Pod New failed")
+	podPresentResp := &PresentResponse{}
+	err = json.Unmarshal(podPresentBodyBytes, podPresentResp)
+	if err != nil {
+		fmt.Println("Error ", err.Error(), time.Now())
+		return
 	}
 
-	// pod open
-	podOpenHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.PodOpen)),  bytes.NewBuffer(podReqData,))
-	if err != nil {
-		return
-	}
-	podOpenHttpReq.Header.Add("Content-Type", "application/json")
-	podOpenHttpReq.Header.Add("Content-Length", strconv.Itoa(len(podReqData)))
-	podOpenHttpReq.Header.Set("Cookie", cookie[0])
-	podOpenResp, err := c.Do(podOpenHttpReq)
-	if err != nil {
-		fmt.Println("Error ", err.Error(), time.Now())
-		return
-	}
-	err = podOpenResp.Body.Close()
-	if err != nil {
-		fmt.Println("Error ", err.Error(), time.Now())
-		return
-	}
-	if podOpenResp.StatusCode != http.StatusOK {
-		fmt.Println("Pod Open failed")
-		return
+	if !podPresentResp.Present {
+		// pod new
+		podHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.PodNew)),  bytes.NewBuffer(podReqData,))
+		if err != nil {
+			return
+		}
+		podHttpReq.Header.Add("Content-Type", "application/json")
+		podHttpReq.Header.Add("Content-Length", strconv.Itoa(len(podReqData)))
+		podHttpReq.Header.Set("Cookie", cookie[0])
+		podNewResp, err := c.Do(podHttpReq)
+		if err != nil {
+			fmt.Println("Error ", err.Error(), time.Now())
+			return
+		}
+		err = podNewResp.Body.Close()
+		if err != nil {
+			fmt.Println("Error ", err.Error(), time.Now())
+			return
+		}
+		if podNewResp.StatusCode != http.StatusCreated {
+			fmt.Println("Pod New failed")
+			return
+		}
+	} else {
+		// pod open
+		podOpenHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.PodOpen)),  bytes.NewBuffer(podReqData,))
+		if err != nil {
+			return
+		}
+		podOpenHttpReq.Header.Add("Content-Type", "application/json")
+		podOpenHttpReq.Header.Add("Content-Length", strconv.Itoa(len(podReqData)))
+		podOpenHttpReq.Header.Set("Cookie", cookie[0])
+		podOpenResp, err := c.Do(podOpenHttpReq)
+		if err != nil {
+			fmt.Println("Error ", err.Error(), time.Now())
+			return
+		}
+		err = podOpenResp.Body.Close()
+		if err != nil {
+			fmt.Println("Error ", err.Error(), time.Now())
+			return
+		}
+		if podOpenResp.StatusCode != http.StatusOK {
+			fmt.Println("Pod Open failed")
+			return
+		}
 	}
 
 	for {
@@ -225,8 +270,6 @@ func main() {
 			fmt.Println("Download failed")
 			return
 		}
-
-
 
 		// FileStat
 		fReq := &dfsCommon.FileDownloadRequest{
