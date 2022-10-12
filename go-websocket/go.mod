@@ -3,6 +3,6 @@ module github.com/fairDataSociety/fairos-client-examples/go-websocket
 go 1.17
 
 require (
-	github.com/fairdatasociety/fairOS-dfs v0.6.3-0.20211202125442-c3f0b7d306d9
+	github.com/fairdatasociety/fairOS-dfs v0.8.2-rc6.0.20221012122333-e8583124b19b
 	github.com/gorilla/websocket v1.4.2
 )
