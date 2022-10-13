@@ -3,8 +3,7 @@ var W3CWebSocket = require('websocket').w3cwebsocket;
 const websocketStream = require('websocket-stream/stream');
 
 // Establish a websocket connection
-var ws = new W3CWebSocket("ws://localhost:9090/ws/v1/");
-
+var ws = new W3CWebSocket("ws://localhost:9090/ws/v1/", null, "http://localhost:3000");
 // Import events
 var events = require('./events');
 
@@ -12,9 +11,9 @@ var events = require('./events');
     The following code block is for the demo only
     dont hard code password in your project
 */
-var username = "user_"+(Date.now() / 1000).toFixed(0)
-var password = "159263487"
-var podName = "pod1"
+var username = "example"
+var password = "password"
+var podName = "pod"
 
 function downloadFile() {
     var data = {
@@ -110,21 +109,9 @@ function loadJSON() {
     });
 }
 
-
-function userSignUp() {
-    var data = {
-        "event": events.UserSignup,
-        "params": {
-            "user_name": username,
-            "password": password
-        }
-    }
-    ws.send(JSON.stringify(data))
-}
-
 function userLogin() {
     var data = {
-        "event": events.UserLogin,
+        "event": events.UserLoginV2,
         "params": {
             "user_name": username,
             "password": password
@@ -146,22 +133,12 @@ function userLoggedin() {
 
 function userPresent() {
     var data = {
-        "event": events.UserPresent,
+        "event": events.UserPresentV2,
         "params": {
             "user_name": username,
         }
     }
     console.log(data)
-    ws.send(JSON.stringify(data))
-}
-
-function userExport() {
-    var data = {
-        "event": events.UserExport,
-        "params": {
-            "user_name": username,
-        }
-    }
     ws.send(JSON.stringify(data))
 }
 
@@ -486,13 +463,11 @@ WebSocketTest()
 functions = [
     userPresent,
     userLoggedin,
-    userStat,         
-    userSignUp,
+    userStat,
     userLogin,
     userPresent,
     userLoggedin,
     userStat,
-    userExport,
     podNew,
     podOpen,
     podLs,
