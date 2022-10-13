@@ -8,8 +8,6 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
-	"os"
-	"os/signal"
 	"strconv"
 	"time"
 
@@ -21,30 +19,27 @@ type PresentResponse struct {
 }
 
 var (
-	base = "http://localhost:9090/v1"
+	basev1 = "http://localhost:9090/v1"
+	basev2 = "http://localhost:9090/v2"
 )
 
 func main() {
-
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt)
-
-	podName := "pod_16425667351"
-	password := "159263487"
-	username := "user_1642566086"
+	podName := "pod"
+	password := "password"
+	username := "example"
 	c := http.Client{Timeout: time.Duration(1) * time.Minute}
-	signupRequest := &dfsCommon.UserRequest{
+	loginRequest := &dfsCommon.UserRequest{
 		UserName: username,
 		Password: password,
 	}
-	signupRequestData, err := json.Marshal(signupRequest)
+	loginRequestData, err := json.Marshal(loginRequest)
 	if err != nil {
 		fmt.Println("Marshal:", err)
 		return
 	}
 
 	// is User present
-	isUserPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s%s?user_name=%s", base, string(dfsCommon.UserPresent), signupRequest.UserName),  nil)
+	isUserPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s%s?user_name=%s", basev2, string(dfsCommon.UserPresent), loginRequest.UserName), nil)
 	isUserPresentResp, err := c.Do(isUserPresentReq)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
@@ -61,38 +56,14 @@ func main() {
 		fmt.Println("Error ", err.Error(), time.Now())
 		return
 	}
-	if !presentResp.Present {
-		// user signup
-		signupRequestDataHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.UserSignup)),  bytes.NewBuffer(signupRequestData))
-		if err != nil {
-			return
-		}
-		signupRequestDataHttpReq.Header.Add("Content-Type", "application/json")
-		signupRequestDataHttpReq.Header.Add("Content-Length", strconv.Itoa(len(signupRequestData)))
-		signupRequestResp, err := c.Do(signupRequestDataHttpReq)
-		if err != nil {
-			fmt.Println("Error ", err.Error(), time.Now())
-			return
-		}
-
-		err = signupRequestResp.Body.Close()
-		if err != nil {
-			fmt.Println("Error ", err.Error(), time.Now())
-			return
-		}
-		if signupRequestResp.StatusCode != http.StatusCreated {
-			fmt.Println("Signup failed", signupRequestResp.StatusCode)
-			return
-		}
-	}
 
 	// Login
-	userLoginHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.UserLogin)),  bytes.NewBuffer(signupRequestData))
+	userLoginHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", basev2, string(dfsCommon.UserLogin)), bytes.NewBuffer(loginRequestData))
 	if err != nil {
 		return
 	}
 	userLoginHttpReq.Header.Add("Content-Type", "application/json")
-	userLoginHttpReq.Header.Add("Content-Length", strconv.Itoa(len(signupRequestData)))
+	userLoginHttpReq.Header.Add("Content-Length", strconv.Itoa(len(loginRequestData)))
 	userLoginResp, err := c.Do(userLoginHttpReq)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
@@ -104,7 +75,8 @@ func main() {
 		return
 	}
 	if userLoginResp.StatusCode != http.StatusOK {
-		fmt.Println("Login failed")
+		fmt.Println("Login failed", userLoginResp.StatusCode)
+		return
 	}
 
 	cookie := userLoginResp.Header["Set-Cookie"]
@@ -119,7 +91,7 @@ func main() {
 	}
 
 	// is pod present
-	isPodPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/pod/present?pod_name=%s", base, podName),  nil)
+	isPodPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/pod/present?pod_name=%s", basev1, podName), nil)
 	isPodPresentResp, err := c.Do(isPodPresentReq)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
@@ -139,7 +111,7 @@ func main() {
 
 	if !podPresentResp.Present {
 		// pod new
-		podHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.PodNew)),  bytes.NewBuffer(podReqData,))
+		podHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", basev1, string(dfsCommon.PodNew)), bytes.NewBuffer(podReqData))
 		if err != nil {
 			return
 		}
@@ -162,7 +134,7 @@ func main() {
 		}
 	} else {
 		// pod open
-		podOpenHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.PodOpen)),  bytes.NewBuffer(podReqData,))
+		podOpenHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", basev1, string(dfsCommon.PodOpen)), bytes.NewBuffer(podReqData))
 		if err != nil {
 			return
 		}
@@ -185,148 +157,162 @@ func main() {
 		}
 	}
 
-	for {
-		// upload
-		uploadBuf := new(bytes.Buffer)
-		fileName := fmt.Sprintf("file_%d", time.Now().Unix())
-		uploadWriter := multipart.NewWriter(uploadBuf)
-		dataBytes := []byte(fmt.Sprintf("Latest updates %d", time.Now().Unix()))
-		uploadWriter.WriteField("pod_name", podName)
-		uploadWriter.WriteField("dir_path", "/")
-		uploadWriter.WriteField("block_size", "1Mb")
-		uploadWriter.WriteField("content_length", fmt.Sprintf("%d", len(dataBytes)))
-		uploadPart, err := uploadWriter.CreateFormFile("files", fileName)
-		if err != nil {
-			fmt.Println("Error ", err.Error(), time.Now())
-			return
-		}
-		_, err = io.Copy(uploadPart, bytes.NewReader(dataBytes))
-		if err != nil {
-			fmt.Println("Error ", err.Error(), time.Now())
-			return
-		}
-		err = uploadWriter.Close()
-		if err != nil {
-			fmt.Println("Error ", err.Error(), time.Now())
-			return
-		}
-		contentType := fmt.Sprintf("multipart/form-data;boundary=%v", uploadWriter.Boundary())
-		uploadHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.FileUpload)), uploadBuf)
-		if err != nil {
-			fmt.Println("Error ", err.Error(), time.Now())
-			return
-		}
-		uploadHttpReq.Header.Set("Content-Type", contentType)
-		if cookie != nil {
-			uploadHttpReq.Header.Set("Cookie", cookie[0])
-		}
-		uploadResp, err := c.Do(uploadHttpReq)
-		if err != nil {
-			fmt.Println("Error", err.Error(), time.Now())
-			return
-		}
-		err =  uploadResp.Body.Close()
-		if err != nil {
-			fmt.Println("Error", err.Error(), time.Now())
-			return
-		}
-		if uploadResp.StatusCode != http.StatusOK {
-			fmt.Println("Upload failed")
-			return
-		}
+	// upload
+	uploadBuf := new(bytes.Buffer)
+	fileName := fmt.Sprintf("file_%d", time.Now().Unix())
+	uploadWriter := multipart.NewWriter(uploadBuf)
+	dataBytes := []byte(fmt.Sprintf("Latest updates %d", time.Now().Unix()))
+	uploadWriter.WriteField("pod_name", podName)
+	uploadWriter.WriteField("dir_path", "/")
+	uploadWriter.WriteField("block_size", "1Mb")
+	uploadWriter.WriteField("content_length", fmt.Sprintf("%d", len(dataBytes)))
+	uploadPart, err := uploadWriter.CreateFormFile("files", fileName)
+	if err != nil {
+		fmt.Println("Error ", err.Error(), time.Now())
+		return
+	}
+	_, err = io.Copy(uploadPart, bytes.NewReader(dataBytes))
+	if err != nil {
+		fmt.Println("Error ", err.Error(), time.Now())
+		return
+	}
+	err = uploadWriter.Close()
+	if err != nil {
+		fmt.Println("Error ", err.Error(), time.Now())
+		return
+	}
+	contentType := fmt.Sprintf("multipart/form-data;boundary=%v", uploadWriter.Boundary())
+	uploadHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", basev1, string(dfsCommon.FileUpload)), uploadBuf)
+	if err != nil {
+		fmt.Println("Error ", err.Error(), time.Now())
+		return
+	}
+	uploadHttpReq.Header.Set("Content-Type", contentType)
+	if cookie != nil {
+		uploadHttpReq.Header.Set("Cookie", cookie[0])
+	}
+	uploadResp, err := c.Do(uploadHttpReq)
+	if err != nil {
+		fmt.Println("Error", err.Error(), time.Now())
+		return
+	}
+	err = uploadResp.Body.Close()
+	if err != nil {
+		fmt.Println("Error", err.Error(), time.Now())
+		return
+	}
+	if uploadResp.StatusCode != http.StatusOK {
+		fmt.Println("Upload failed", uploadResp.StatusCode)
+		return
+	}
 
-		// download
-		downloadBuf := new(bytes.Buffer)
-		downloadWriter := multipart.NewWriter(downloadBuf)
-		downloadWriter.WriteField("pod_name", podName)
-		downloadWriter.WriteField("file_path", fmt.Sprintf("/%s", fileName))
+	// download
+	downloadBuf := new(bytes.Buffer)
+	downloadWriter := multipart.NewWriter(downloadBuf)
+	downloadWriter.WriteField("pod_name", podName)
+	downloadWriter.WriteField("file_path", fmt.Sprintf("/%s", fileName))
 
-		err = downloadWriter.Close()
-		if err != nil {
-			fmt.Println("Error", err.Error(), time.Now())
-			return
-		}
-		contentType = fmt.Sprintf("multipart/form-data;boundary=%v", downloadWriter.Boundary())
-		downloadHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", base, string(dfsCommon.FileDownload)), downloadBuf)
-		if err != nil {
-			fmt.Println("Error", err.Error(), time.Now())
-			return
-		}
-		downloadHttpReq.Header.Set("Content-Type", contentType)
-		if cookie != nil {
-			downloadHttpReq.Header.Set("Cookie", cookie[0])
-		}
-		downloadResp, err := c.Do(downloadHttpReq)
-		if err != nil {
-			fmt.Println("Error", err.Error(), time.Now())
-			return
-		}
-		err =  downloadResp.Body.Close()
-		if err != nil {
-			fmt.Println("Error", err.Error(), time.Now())
-			return
-		}
-		if downloadResp.StatusCode != http.StatusOK {
-			fmt.Println("Download failed")
-			return
-		}
+	err = downloadWriter.Close()
+	if err != nil {
+		fmt.Println("Error", err.Error(), time.Now())
+		return
+	}
+	contentType = fmt.Sprintf("multipart/form-data;boundary=%v", downloadWriter.Boundary())
+	downloadHttpReq, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s%s", basev1, string(dfsCommon.FileDownload)), downloadBuf)
+	if err != nil {
+		fmt.Println("Error", err.Error(), time.Now())
+		return
+	}
+	downloadHttpReq.Header.Set("Content-Type", contentType)
+	if cookie != nil {
+		downloadHttpReq.Header.Set("Cookie", cookie[0])
+	}
+	downloadResp, err := c.Do(downloadHttpReq)
+	if err != nil {
+		fmt.Println("Error", err.Error(), time.Now())
+		return
+	}
+	err = downloadResp.Body.Close()
+	if err != nil {
+		fmt.Println("Error", err.Error(), time.Now())
+		return
+	}
+	if downloadResp.StatusCode != http.StatusOK {
+		fmt.Println("Download failed")
+		return
+	}
 
-		// FileStat
-		fReq := &dfsCommon.FileDownloadRequest{
-			PodName:  podName,
-			Filepath: fileName,
-		}
-		fileStatHttpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:9090/v1%s?file_path=/%s&pod_name=%s", string(dfsCommon.FileStat), fReq.Filepath, fReq.PodName), nil)
-		if err != nil {
-			return
-		}
-		fileStatHttpReq.Header.Add("Content-Type", "application/json")
-		if cookie != nil {
-			fileStatHttpReq.Header.Set("Cookie", cookie[0])
-		}
-		fileStatResp, err := c.Do(fileStatHttpReq)
-		if err != nil {
-			fmt.Println("Error", err.Error(), time.Now())
-			return
-		}
-		err = fileStatResp.Body.Close()
-		if err != nil {
-			fmt.Println("Error", err.Error(), time.Now())
-			return
-		}
-		if fileStatResp.StatusCode != http.StatusOK {
-			fmt.Println("File Stat failed")
-			return
-		}
+	// FileStat
+	fReq := &dfsCommon.FileDownloadRequest{
+		PodName:  podName,
+		Filepath: fileName,
+	}
+	fileStatHttpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:9090/v1%s?file_path=/%s&pod_name=%s", string(dfsCommon.FileStat), fReq.Filepath, fReq.PodName), nil)
+	if err != nil {
+		return
+	}
+	fileStatHttpReq.Header.Add("Content-Type", "application/json")
+	if cookie != nil {
+		fileStatHttpReq.Header.Set("Cookie", cookie[0])
+	}
+	fileStatResp, err := c.Do(fileStatHttpReq)
+	if err != nil {
+		fmt.Println("Error", err.Error(), time.Now())
+		return
+	}
+	err = fileStatResp.Body.Close()
+	if err != nil {
+		fmt.Println("Error", err.Error(), time.Now())
+		return
+	}
+	if fileStatResp.StatusCode != http.StatusOK {
+		fmt.Println("File Stat failed")
+		return
+	}
 
-		// DirLs
-		dirLsHttpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:9090/v1%s?dir_path=/&pod_name=%s", string(dfsCommon.DirLs), fReq.PodName), nil)
-		if err != nil {
-			return
-		}
-		dirLsHttpReq.Header.Add("Content-Type", "application/json")
-		if cookie != nil {
-			dirLsHttpReq.Header.Set("Cookie", cookie[0])
-		}
-		dirLsResp, err := c.Do(dirLsHttpReq)
-		if err != nil {
-			fmt.Println("Error", err.Error(), time.Now())
-			return
-		}
-		err = dirLsResp.Body.Close()
-		if err != nil {
-			fmt.Println("Error ", err.Error(), time.Now())
-			return
-		}
-		if dirLsResp.StatusCode != http.StatusOK {
-			fmt.Println("Dir LS failed")
-			return
-		}
+	// DirLs
+	dirLsHttpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:9090/v1%s?dir_path=/&pod_name=%s", string(dfsCommon.DirLs), fReq.PodName), nil)
+	if err != nil {
+		return
+	}
+	dirLsHttpReq.Header.Add("Content-Type", "application/json")
+	if cookie != nil {
+		dirLsHttpReq.Header.Set("Cookie", cookie[0])
+	}
+	dirLsResp, err := c.Do(dirLsHttpReq)
+	if err != nil {
+		fmt.Println("Error", err.Error(), time.Now())
+		return
+	}
+	err = dirLsResp.Body.Close()
+	if err != nil {
+		fmt.Println("Error ", err.Error(), time.Now())
+		return
+	}
+	if dirLsResp.StatusCode != http.StatusOK {
+		fmt.Println("Dir LS failed")
+		return
+	}
 
-		select {
-			case <-interrupt:
-				return
-			case <-time.After(time.Second * 5):
-		}
+	podDeleteHttpReq, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s%s", basev1, string(dfsCommon.PodDelete)), bytes.NewBuffer(podReqData))
+	if err != nil {
+		return
+	}
+	podDeleteHttpReq.Header.Add("Content-Type", "application/json")
+	podDeleteHttpReq.Header.Add("Content-Length", strconv.Itoa(len(podReqData)))
+	podDeleteHttpReq.Header.Set("Cookie", cookie[0])
+	podDeleteResp, err := c.Do(podDeleteHttpReq)
+	if err != nil {
+		fmt.Println("Error ", err.Error(), time.Now())
+		return
+	}
+	err = podDeleteResp.Body.Close()
+	if err != nil {
+		fmt.Println("Error ", err.Error(), time.Now())
+		return
+	}
+	if podDeleteResp.StatusCode != http.StatusOK {
+		fmt.Println("Pod Delete failed", podDeleteResp.StatusCode)
+		return
 	}
 }
