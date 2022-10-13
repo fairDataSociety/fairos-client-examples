@@ -1,6 +1,4 @@
-var UserSignup       = "/user/signup"
-var UserLogin        = "/user/login"
-var UserImport       = "/user/import"
+var UserLoginV2        = "/user/loginV2"
 var UserPresent      = "/user/present"
 var UserIsLoggedin   = "/user/isloggedin"
 var UserLogout       = "/user/logout"
@@ -54,9 +52,9 @@ var DocLoadJson      = "/doc/loadjson"
 var DocIndexJson     = "/doc/indexjson"
 
 // Let us open a web socket
-var username = "user_"+(Date.now() / 1000).toFixed(0)
-var password = "159263487"
-var podName = "pod1"
+var username = "example"
+var password = "password"
+var podName = "pod"
 var ws = new WebSocket("ws://localhost:9090/ws/v1/")
 
 function downloadFile() {
@@ -64,7 +62,7 @@ function downloadFile() {
         "event": FileDownload,
         "params": {
             "pod_name": podName,
-            "file_path": "/index.json"
+            "file_path": "/image.pdf"
         }
     }
     ws.send(JSON.stringify(data))
@@ -127,20 +125,9 @@ function uploadFile() {
     ws.send("done")
 }
 
-userSignUp = function() {
-    var data = {
-        "event": UserSignup,
-        "params": {
-            "user_name": username,
-            "password": password
-        }
-    }
-    ws.send(JSON.stringify(data))
-}
-
 userLogin = function() {
     var data = {
-        "event": UserLogin,
+        "event": UserLoginV2,
         "params": {
             "user_name": username,
             "password": password
@@ -163,16 +150,6 @@ userLoggedin = function() {
 userPresent = function() {
     var data = {
         "event": UserPresent,
-        "params": {
-            "user_name": username,
-        }
-    }
-    ws.send(JSON.stringify(data))
-}
-
-userExport = function() {
-    var data = {
-        "event": UserExport,
         "params": {
             "user_name": username,
         }
@@ -502,13 +479,11 @@ function WebSocketTest() {
     ws.onopen = function() {  
         userPresent()
         userLoggedin()
-        userStat()            
-        userSignUp()
+        userStat()
         userLogin()
         userPresent()
         userLoggedin()
         userStat()
-        userExport()
         podNew()
         podOpen()
         podLs()
