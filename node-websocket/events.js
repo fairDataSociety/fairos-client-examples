@@ -1,9 +1,10 @@
 // All available events
 var events = {
     UserSignup       : "/user/signup",
+    UserLoginV2      : "/user/loginV2",
     UserLogin        : "/user/login",
     UserImport       : "/user/import",
-    UserPresent      : "/user/present",
+    UserPresentV2    : "/user/presentV2",
     UserIsLoggedin   : "/user/isloggedin",
     UserLogout       : "/user/logout",
     UserExport       : "/user/export",

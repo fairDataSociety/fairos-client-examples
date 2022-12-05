@@ -1,15 +1,16 @@
 // Let us define properties needed for API calls
-const username = "user_"+(Date.now() / 1000).toFixed(0)
-const password = "159263487"
-const podName = "pod1"
-const host = "http://localhost:9090/v1";
+const username = "c565c97b2d5cb9d87059cb23ab4d9fcd"
+const password = "756e3c095324"
+const podName = "pod"
+const hostv1 = "http://localhost:9090/v1";
+const hostv2 = "http://localhost:9090/v2";
 
 function downloadFile() {
     var data = {
-        "pod_name": podName,
-        "file_path": "/index.json"
+        "podName": podName,
+        "filePath": "/index.json"
     }
-    return fetch(host + "file/download", {
+    return fetch(hostv1 + "file/download", {
         method: "POST",
         body: JSON.stringify(data),
         credentials: "include"
@@ -21,39 +22,24 @@ function uploadFile() {
     const formData = new FormData();
 
     formData.append("files", fileupload.files[0]);
-    formData.set("pod_name", podName);
-    formData.append("file_name", "index.json");
-    formData.set("dir_path", "/");
-    formData.set("block_size", "1Mb");
+    formData.set("podName", podName);
+    formData.append("fileName", "index.json");
+    formData.set("dirPath", "/");
+    formData.set("blockSize", "1Mb");
 
-    fetch(host + "/file/upload", {
+    fetch(hostv1 + "/file/upload", {
         method: "POST",
         body: formData,
         credentials: "include"
     });
 }
 
-userSignUp = function() {
-    var data = {
-        "user_name": username,
-        "password": password
-    };
-    return fetch(host + "/user/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data),
-        credentials: "include"
-    });
-}
-
 userLogin = function() {
     var data = {
-        "user_name": username,
+        "userName": username,
         "password": password
     };
-    return fetch(host + "/user/login", {
+    return fetch(hostv2 + "/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -65,9 +51,9 @@ userLogin = function() {
 
 userLoggedin = function() {
     var data = {
-        "user_name": username
+        "userName": username
     };
-    return fetch(host + "/user/isloggedin" +  '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/user/isloggedin" +  '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -79,9 +65,9 @@ userLoggedin = function() {
 
 userPresent = function() {
     var data = {
-        "user_name": username
+        "userName": username
     };
-    return fetch(host + "/user/present" + '?' + new URLSearchParams(data), {
+    return fetch(hostv2 + "/user/present" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -90,25 +76,11 @@ userPresent = function() {
     });
 }
 
-userExport = function() {
-    var data = {
-        "user_name": username
-    };
-    return fetch(host + "/user/export", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data),
-        credentials: "include"
-    });
-}
-
 userStat = function() {
     var data = {
-        "user_name": username
+        "userName": username
     };
-    return fetch(host + "/user/stat" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/user/stat" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -119,10 +91,10 @@ userStat = function() {
 
 podNew = function() {
     var data = {
-        "pod_name": podName,
+        "podName": podName,
         "password": password
     };
-    return fetch(host + "/pod/new", {
+    return fetch(hostv1 + "/pod/new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -134,10 +106,10 @@ podNew = function() {
 
 podOpen = function() {
     var data = {
-        "pod_name": podName,
+        "podName": podName,
         "password": password
     };
-    return fetch(host + "/pod/open", {
+    return fetch(hostv1 + "/pod/open", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -149,10 +121,10 @@ podOpen = function() {
 
 podLs = function() {
     var data = {
-        "pod_name": podName,
+        "podName": podName,
         "password": password
     };
-    return fetch(host + "/pod/ls" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/pod/ls" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -163,10 +135,10 @@ podLs = function() {
 
 mkDir = function() {
     var data = {
-        "pod_name": podName,
-        "dir_path": "/d"
+        "podName": podName,
+        "dirPath": "/d"
     };
-    return fetch(host + "/dir/mkdir", {
+    return fetch(hostv1 + "/dir/mkdir", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -178,10 +150,10 @@ mkDir = function() {
 
 rmDir = function() {
     var data = {
-        "pod_name": podName,
-        "dir_path": "/d"
+        "podName": podName,
+        "dirPath": "/d"
     };
-    return fetch(host + "/dir/rmdir", {
+    return fetch(hostv1 + "/dir/rmdir", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json"
@@ -193,10 +165,10 @@ rmDir = function() {
 
 dirLs = function() {
     var data = {
-        "pod_name": podName,
-        "dir_path": "/"
+        "podName": podName,
+        "dirPath": "/"
     };
-    return fetch(host + "/dir/ls" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/dir/ls" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -207,10 +179,10 @@ dirLs = function() {
 
 dirStat = function() {
     var data = {
-        "pod_name": podName,
-        "dir_path": "/d"
+        "podName": podName,
+        "dirPath": "/d"
     };
-    return fetch(host + "/dir/stat" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/dir/stat" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -221,10 +193,10 @@ dirStat = function() {
 
 dirPresent = function() {
     var data = {
-        "pod_name": podName,
-        "dir_path": "/d"
+        "podName": podName,
+        "dirPath": "/d"
     };
-    return fetch(host + "/dir/present" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/dir/present" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -235,10 +207,10 @@ dirPresent = function() {
 
 stat = function() {
     var data = {
-        "pod_name": podName,
-        "file_path": "/index.json"
+        "podName": podName,
+        "filePath": "/index.json"
     };
-    return fetch(host + "/file/stat" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/file/stat" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -250,11 +222,11 @@ stat = function() {
 var table = "kv_1"
 kvCreate = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
-        "index_type": "string"
+        "podName": podName,
+        "tableName": table,
+        "indexType": "string"
     };
-    return fetch(host + "/kv/new", {
+    return fetch(hostv1 + "/kv/new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -266,9 +238,9 @@ kvCreate = function() {
 
 kvList = function() {
     var data = {
-        "pod_name": podName
+        "podName": podName
     };
-    return fetch(host + "/kv/ls" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/kv/ls" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -279,10 +251,10 @@ kvList = function() {
 
 kvOpen = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
     };
-    return fetch(host + "/kv/open", {
+    return fetch(hostv1 + "/kv/open", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -294,12 +266,12 @@ kvOpen = function() {
 
 kvEntryPut = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
         "key": "key1",
         "value": "value"
     };
-    return fetch(host + "/kv/entry/put", {
+    return fetch(hostv1 + "/kv/entry/put", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -311,10 +283,10 @@ kvEntryPut = function() {
 
 kvCount = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
     };
-    return fetch(host + "/kv/count", {
+    return fetch(hostv1 + "/kv/count", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -326,11 +298,11 @@ kvCount = function() {
 
 kvGet = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
         "key": "key1",
     };
-    return fetch(host + "/kv/entry/get" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/kv/entry/get" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -341,11 +313,11 @@ kvGet = function() {
 
 kvSeek = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
-        "start_prefix": "key",
+        "podName": podName,
+        "tableName": table,
+        "startPrefix": "key",
     };
-    return fetch(host + "/kv/seek", {
+    return fetch(hostv1 + "/kv/seek", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -357,10 +329,10 @@ kvSeek = function() {
 
 kvSeekNext = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
     };
-    return fetch(host + "/kv/seek/next" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/kv/seek/next" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -371,11 +343,11 @@ kvSeekNext = function() {
 
 kvEntryDel = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
         "key": "key1",
     };
-    return fetch(host + "/kv/entry/del", {
+    return fetch(hostv1 + "/kv/entry/del", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json"
@@ -388,12 +360,12 @@ kvEntryDel = function() {
 var docTable = "doc_1"
 docCreate = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
         "si": "first_name=string,age=number",
         "mutable": true
     };
-    return fetch(host + "/doc/new", {
+    return fetch(hostv1 + "/doc/new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -405,9 +377,9 @@ docCreate = function() {
 
 docLs = function() {
     var data = {
-        "pod_name": podName
+        "podName": podName
     };
-    return fetch(host + "/doc/ls" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/doc/ls" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -418,10 +390,10 @@ docLs = function() {
 
 docOpen = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable
+        "podName": podName,
+        "tableName": docTable
     };
-    return fetch(host + "/doc/open", {
+    return fetch(hostv1 + "/doc/open", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -433,11 +405,11 @@ docOpen = function() {
 
 docEntryPut = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
         "doc":  `{"id":"1", "first_name": "Hello1", "age": 11}`,
     };
-    return fetch(host + "/doc/entry/put", {
+    return fetch(hostv1 + "/doc/entry/put", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -449,11 +421,11 @@ docEntryPut = function() {
 
 docEntryGet = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
         "id":  "1",
     };
-    return fetch(host + "/doc/entry/get" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/doc/entry/get" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -464,11 +436,11 @@ docEntryGet = function() {
 
 docFind = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
         "expr":  `age>10`,
     };
-    return fetch(host + "/doc/find" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/doc/find" + '?' + new URLSearchParams(data), {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -479,10 +451,10 @@ docFind = function() {
 
 docCount = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
     };
-    return fetch(host + "/doc/count", {
+    return fetch(hostv1 + "/doc/count", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -494,11 +466,11 @@ docCount = function() {
 
 docEntryDel = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
         "id":  "1",
     };
-    return fetch(host + "/doc/entry/del", {
+    return fetch(hostv1 + "/doc/entry/del", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json"
@@ -510,10 +482,10 @@ docEntryDel = function() {
 
 docDel = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
     };
-    return fetch(host + "/doc/delete", {
+    return fetch(hostv1 + "/doc/delete", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json"
@@ -522,8 +494,6 @@ docDel = function() {
         credentials: "include"
     });
 }
-
-apiTest();
 
 function handleResponse(response) {
     console.log(response);
@@ -551,8 +521,6 @@ function apiTest() {
         .then(handleResponse)
         .then(userStat)
         .then(handleResponse)
-        .then(userSignUp)
-        .then(handleResponse)
         .then(userLogin)
         .then(handleResponse)
         .then(userPresent)
@@ -560,8 +528,6 @@ function apiTest() {
         .then(userLoggedin)
         .then(handleResponse)
         .then(userStat)
-        .then(handleResponse)
-        .then(userExport)
         .then(handleResponse)
         .then(podNew)
         .then(handleResponse)
@@ -571,13 +537,13 @@ function apiTest() {
         .then(handleResponse)
         .then(mkDir)
         .then(handleResponse)
-        .then(rmDir)
-        .then(handleResponse)
         .then(dirLs)
         .then(handleResponse)
         .then(dirStat)
         .then(handleResponse)
         .then(dirPresent)
+        .then(handleResponse)
+        .then(rmDir)
         .then(handleResponse)
         .then(stat)
         .then(handleResponse)
@@ -620,3 +586,4 @@ function apiTest() {
         .then(() => console.log('Complete'))
 }
 
+apiTest();

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"os/signal"
@@ -23,8 +24,9 @@ func main() {
 
 	u := url.URL{Scheme: "ws", Host: addr, Path: "/ws/v1/"}
 	log.Printf("connecting to %s\n", u.String())
-
-	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	header := http.Header{}
+	header.Set("Origin", "http://localhost:3000")
+	c, _, err := websocket.DefaultDialer.Dial(u.String(), header)
 	if err != nil {
 		log.Fatal("dial:", err)
 	}
@@ -89,59 +91,19 @@ func main() {
 		}
 	}()
 
-	// userSignup
-	podName := "pod1"
-	password := "159263487"
-	username := fmt.Sprintf("user_%d", time.Now().Unix())
-	sighup := &dfsCommon.WebsocketRequest{
-		Event: dfsCommon.UserSignup,
-		Params: dfsCommon.UserRequest{
-			UserName: username,
-			Password: password,
-		},
-	}
-
-	data, err := json.Marshal(sighup)
-	if err != nil {
-		log.Println("Marshal:", err)
-		return
-	}
-	err = c.WriteMessage(websocket.TextMessage, data)
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
+	podName := "pod"
+	password := "756e3c095324"
+	username := "c565c97b2d5cb9d87059cb23ab4d9fcd"
 
 	// userLogin
 	login := &dfsCommon.WebsocketRequest{
-		Event: dfsCommon.UserLogin,
-		Params: dfsCommon.UserRequest{
+		Event: dfsCommon.UserLoginV2,
+		Params: dfsCommon.UserLoginRequest{
 			UserName: username,
 			Password: password,
 		},
 	}
-	data, err = json.Marshal(login)
-	if err != nil {
-		log.Println("Marshal:", err)
-		return
-	}
-	err = c.WriteMessage(websocket.TextMessage, data)
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
-
-	// userImport
-	uImport := &dfsCommon.WebsocketRequest{
-		Event: dfsCommon.UserImport,
-		Params: dfsCommon.UserRequest{
-			UserName: "asabya3",
-			Password: "159263487",
-			Address:  "e22505220696B51E269274443E31C8cf97DBccAE",
-			Mnemonic: "scene axis age olympic mixed crystal diary tilt swallow pluck leader desk",
-		},
-	}
-	data, err = json.Marshal(uImport)
+	data, err := json.Marshal(login)
 	if err != nil {
 		log.Println("Marshal:", err)
 		return
@@ -154,8 +116,8 @@ func main() {
 
 	// userPresent
 	uPresent := &dfsCommon.WebsocketRequest{
-		Event: dfsCommon.UserPresent,
-		Params: dfsCommon.UserRequest{
+		Event: dfsCommon.UserPresentV2,
+		Params: dfsCommon.UserLoginRequest{
 			UserName: username,
 		},
 	}
@@ -173,7 +135,7 @@ func main() {
 	// userLoggedIN
 	uLoggedIn := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.UserIsLoggedin,
-		Params: dfsCommon.UserRequest{
+		Params: dfsCommon.UserLoginRequest{
 			UserName: username,
 		},
 	}
@@ -187,7 +149,7 @@ func main() {
 		log.Println("write:", err)
 		return
 	}
-
+	//
 	// userExport
 	userExport := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.UserExport,
@@ -366,7 +328,7 @@ func main() {
 		return
 	}
 
-	// Upload
+	//Upload
 	upload := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.FileUpload,
 		Params: dfsCommon.FileRequest{
@@ -402,7 +364,7 @@ func main() {
 		return
 	}
 
-	// Download
+	//Download
 	download := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.FileDownload,
 		Params: dfsCommon.FileDownloadRequest{
@@ -424,9 +386,9 @@ func main() {
 	// stat
 	stat := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.FileStat,
-		Params: dfsCommon.FileDownloadRequest{
-			PodName:  podName,
-			Filepath: "/index.json",
+		Params: dfsCommon.FileSystemRequest{
+			PodName:       podName,
+			DirectoryPath: "/index.json",
 		},
 	}
 	data, err = json.Marshal(stat)
@@ -498,42 +460,42 @@ func main() {
 		return
 	}
 
-	// loadcsv
-	loadcsv := &dfsCommon.WebsocketRequest{
-		Event: dfsCommon.KVLoadCSV,
-		Params: dfsCommon.FileRequest{
-			PodName:   podName,
-			TableName: table,
-			FileName:  "somefile.csv",
-		},
-	}
-	data, err = json.Marshal(loadcsv)
-	if err != nil {
-		log.Println("Marshal:", err)
-		return
-	}
-	err = c.WriteMessage(websocket.TextMessage, data)
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
-	file, err = os.Open("../resources/somefile.csv")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-	body = &bytes.Buffer{}
-	_, err = io.Copy(body, file)
-	if err != nil {
-		panic(err)
-	}
-	err = c.WriteMessage(websocket.BinaryMessage, body.Bytes())
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
+	//loadcsv
+	//loadcsv := &dfsCommon.WebsocketRequest{
+	//	Event: dfsCommon.KVLoadCSV,
+	//	Params: dfsCommon.FileRequest{
+	//		PodName:   podName,
+	//		TableName: table,
+	//		FileName:  "somefile.csv",
+	//	},
+	//}
+	//data, err = json.Marshal(loadcsv)
+	//if err != nil {
+	//	log.Println("Marshal:", err)
+	//	return
+	//}
+	//err = c.WriteMessage(websocket.TextMessage, data)
+	//if err != nil {
+	//	log.Println("write:", err)
+	//	return
+	//}
+	//file, err = os.Open("../resources/somefile.csv")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//defer file.Close()
+	//body = &bytes.Buffer{}
+	//_, err = io.Copy(body, file)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//err = c.WriteMessage(websocket.BinaryMessage, body.Bytes())
+	//if err != nil {
+	//	log.Println("write:", err)
+	//	return
+	//}
 
-	// kvEntryPut
+	//kvEntryPut
 	kvEntryPut := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.KVEntryPut,
 		Params: dfsCommon.KVRequest{
@@ -752,60 +714,60 @@ func main() {
 		return
 	}
 
-	// loadjson
-	loadjson := &dfsCommon.WebsocketRequest{
-		Event: dfsCommon.DocLoadJson,
-		Params: dfsCommon.FileRequest{
-			PodName:   podName,
-			TableName: docTable,
-			FileName:  "somefile.json",
-		},
-	}
-	data, err = json.Marshal(loadjson)
-	if err != nil {
-		log.Println("Marshal:", err)
-		return
-	}
-	err = c.WriteMessage(websocket.TextMessage, data)
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
-	file, err = os.Open("../resources/somefile.json")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-	body = &bytes.Buffer{}
-	_, err = io.Copy(body, file)
-	if err != nil {
-		panic(err)
-	}
-	err = c.WriteMessage(websocket.BinaryMessage, body.Bytes())
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
+	//loadjson
+	//loadjson := &dfsCommon.WebsocketRequest{
+	//	Event: dfsCommon.DocLoadJson,
+	//	Params: dfsCommon.FileRequest{
+	//		PodName:   podName,
+	//		TableName: docTable,
+	//		FileName:  "somefile.json",
+	//	},
+	//}
+	//data, err = json.Marshal(loadjson)
+	//if err != nil {
+	//	log.Println("Marshal:", err)
+	//	return
+	//}
+	//err = c.WriteMessage(websocket.TextMessage, data)
+	//if err != nil {
+	//	log.Println("write:", err)
+	//	return
+	//}
+	//file, err = os.Open("../resources/somefile.json")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//defer file.Close()
+	//body = &bytes.Buffer{}
+	//_, err = io.Copy(body, file)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//err = c.WriteMessage(websocket.BinaryMessage, body.Bytes())
+	//if err != nil {
+	//	log.Println("write:", err)
+	//	return
+	//}
 
-	// indexjson
-	indexjson := &dfsCommon.WebsocketRequest{
-		Event: dfsCommon.DocIndexJson,
-		Params: dfsCommon.DocRequest{
-			PodName:   podName,
-			TableName: docTable,
-			FileName:  "/index.json",
-		},
-	}
-	data, err = json.Marshal(indexjson)
-	if err != nil {
-		log.Println("Marshal:", err)
-		return
-	}
-	err = c.WriteMessage(websocket.TextMessage, data)
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
+	//indexjson
+	//indexjson := &dfsCommon.WebsocketRequest{
+	//	Event: dfsCommon.DocIndexJson,
+	//	Params: dfsCommon.DocRequest{
+	//		PodName:   podName,
+	//		TableName: docTable,
+	//		FileName:  "/index.json",
+	//	},
+	//}
+	//data, err = json.Marshal(indexjson)
+	//if err != nil {
+	//	log.Println("Marshal:", err)
+	//	return
+	//}
+	//err = c.WriteMessage(websocket.TextMessage, data)
+	//if err != nil {
+	//	log.Println("write:", err)
+	//	return
+	//}
 
 	// docFind
 	docFind := &dfsCommon.WebsocketRequest{
@@ -884,5 +846,58 @@ func main() {
 		log.Println("write:", err)
 		return
 	}
+
+	// pod delete
+	podDelete := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.PodDelete,
+		Params: dfsCommon.PodRequest{
+			PodName:  podName,
+			Password: password,
+		},
+	}
+	data, err = json.Marshal(podDelete)
+	if err != nil {
+		log.Println("Marshal:", err)
+		return
+	}
+	err = c.WriteMessage(websocket.TextMessage, data)
+	if err != nil {
+		log.Println("write:", err)
+		return
+	}
+
+	// user Logout
+	uLogout := &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.UserLogout,
+	}
+	data, err = json.Marshal(uLogout)
+	if err != nil {
+		log.Println("Marshal:", err)
+		return
+	}
+	err = c.WriteMessage(websocket.TextMessage, data)
+	if err != nil {
+		log.Println("write:", err)
+		return
+	}
+
+	// userLoggedIN
+	uLoggedIn = &dfsCommon.WebsocketRequest{
+		Event: dfsCommon.UserIsLoggedin,
+		Params: dfsCommon.UserLoginRequest{
+			UserName: username,
+		},
+	}
+	data, err = json.Marshal(uLoggedIn)
+	if err != nil {
+		log.Println("Marshal:", err)
+		return
+	}
+	err = c.WriteMessage(websocket.TextMessage, data)
+	if err != nil {
+		log.Println("write:", err)
+		return
+	}
+
 	<-interrupt
 }
