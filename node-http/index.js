@@ -10,8 +10,8 @@ var events = require('./events');
     The following code block is for the demo only
     dont hard code password in your project
 */
-var username = "example"
-var password = "password"
+var username = "c565c97b2d5cb9d87059cb23ab4d9fcd"
+var password = "756e3c095324"
 var podName = "pod"
 
 const cookieJar = {
@@ -20,8 +20,8 @@ const cookieJar = {
 
 function downloadFile() {
     let formData = new FormData()
-    formData.append("pod_name", podName);
-    formData.append("file_path", "/somefile.json");
+    formData.append("podName", podName);
+    formData.append("filePath", "/somefile.json");
     return axios.post(pathv1+events.FileDownload,  formData, {
         withCredentials: true,
         headers: {
@@ -36,9 +36,9 @@ function uploadFile() {
     var pathOfFile = "../resources/somefile.json"
     let formData = new FormData()
     formData.append("files", fs.createReadStream(pathOfFile), "somefile.json");
-    formData.append("pod_name", podName);
-    formData.append("dir_path", "/");
-    formData.append("block_size", "1Mb");
+    formData.append("podName", podName);
+    formData.append("dirPath", "/");
+    formData.append("blockSize", "1Mb");
     return axios.post(pathv1+events.FileUpload,  formData, {
         withCredentials: true,
         headers: {
@@ -55,7 +55,7 @@ function loadCSV() {
     var data = {
         "event": events.KVLoadCSV,
         "params": {
-            "pod_name": podName,
+            "podName": podName,
             "file_name": "index.json",
             "table_name": table,
             "content_length": stat.size.toString()
@@ -83,7 +83,7 @@ function loadJSON() {
     var data = {
         "event": events.DocLoadJson,
         "params": {
-            "pod_name": podName,
+            "podName": podName,
             "file_name": "index.json",
             "table_name": docTable,
             "content_length": stat.size.toString()
@@ -107,7 +107,7 @@ function loadJSON() {
 
 function userLogin() {
     return axios.post(pathv2+events.UserLogin,  {
-        "user_name": username,
+        "userName": username,
         "password": password
     }, {
         withCredentials: true,
@@ -119,7 +119,7 @@ function userLogin() {
 }
 
 function userLoggedin() {
-    return axios.get(pathv1+events.UserIsLoggedin+"?user_name="+username, {
+    return axios.get(pathv1+events.UserIsLoggedin+"?userName="+username, {
         withCredentials: true,
         headers: {
             "Content-Type" : "application/json",
@@ -130,7 +130,7 @@ function userLoggedin() {
 
 function podNew() {
     return axios.post(pathv1+events.PodNew,  {
-        "pod_name": podName,
+        "podName": podName,
         "password": password
     }, {
         headers: {
@@ -144,7 +144,7 @@ function podNew() {
 
 function podOpen() {
     return axios.post(pathv1+events.PodOpen,  {
-        "pod_name": podName,
+        "podName": podName,
         "password": password
     }, {
         headers: {

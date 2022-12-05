@@ -92,13 +92,13 @@ func main() {
 	}()
 
 	podName := "pod"
-	password := "password"
-	username := "example"
+	password := "756e3c095324"
+	username := "c565c97b2d5cb9d87059cb23ab4d9fcd"
 
 	// userLogin
 	login := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.UserLoginV2,
-		Params: dfsCommon.UserRequest{
+		Params: dfsCommon.UserLoginRequest{
 			UserName: username,
 			Password: password,
 		},
@@ -117,7 +117,7 @@ func main() {
 	// userPresent
 	uPresent := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.UserPresentV2,
-		Params: dfsCommon.UserRequest{
+		Params: dfsCommon.UserLoginRequest{
 			UserName: username,
 		},
 	}
@@ -135,7 +135,7 @@ func main() {
 	// userLoggedIN
 	uLoggedIn := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.UserIsLoggedin,
-		Params: dfsCommon.UserRequest{
+		Params: dfsCommon.UserLoginRequest{
 			UserName: username,
 		},
 	}
@@ -884,7 +884,7 @@ func main() {
 	// userLoggedIN
 	uLoggedIn = &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.UserIsLoggedin,
-		Params: dfsCommon.UserRequest{
+		Params: dfsCommon.UserLoginRequest{
 			UserName: username,
 		},
 	}

@@ -25,10 +25,10 @@ var (
 
 func main() {
 	podName := "pod"
-	password := "password"
-	username := "example"
+	password := "756e3c095324"
+	username := "c565c97b2d5cb9d87059cb23ab4d9fcd"
 	c := http.Client{Timeout: time.Duration(1) * time.Minute}
-	loginRequest := &dfsCommon.UserRequest{
+	loginRequest := &dfsCommon.UserLoginRequest{
 		UserName: username,
 		Password: password,
 	}
@@ -39,7 +39,7 @@ func main() {
 	}
 
 	// is User present
-	isUserPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s%s?user_name=%s", basev2, string(dfsCommon.UserPresent), loginRequest.UserName), nil)
+	isUserPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s%s?userName=%s", basev2, string(dfsCommon.UserPresent), loginRequest.UserName), nil)
 	isUserPresentResp, err := c.Do(isUserPresentReq)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
@@ -91,7 +91,10 @@ func main() {
 	}
 
 	// is pod present
-	isPodPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/pod/present?pod_name=%s", basev1, podName), nil)
+	isPodPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/pod/present?podName=%s", basev1, podName), nil)
+	if cookie != nil {
+		isPodPresentReq.Header.Set("Cookie", cookie[0])
+	}
 	isPodPresentResp, err := c.Do(isPodPresentReq)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
@@ -162,10 +165,10 @@ func main() {
 	fileName := fmt.Sprintf("file_%d", time.Now().Unix())
 	uploadWriter := multipart.NewWriter(uploadBuf)
 	dataBytes := []byte(fmt.Sprintf("Latest updates %d", time.Now().Unix()))
-	uploadWriter.WriteField("pod_name", podName)
-	uploadWriter.WriteField("dir_path", "/")
-	uploadWriter.WriteField("block_size", "1Mb")
-	uploadWriter.WriteField("content_length", fmt.Sprintf("%d", len(dataBytes)))
+	uploadWriter.WriteField("podName", podName)
+	uploadWriter.WriteField("dirPath", "/")
+	uploadWriter.WriteField("blockSize", "1Mb")
+	uploadWriter.WriteField("contentLength", fmt.Sprintf("%d", len(dataBytes)))
 	uploadPart, err := uploadWriter.CreateFormFile("files", fileName)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
@@ -209,8 +212,8 @@ func main() {
 	// download
 	downloadBuf := new(bytes.Buffer)
 	downloadWriter := multipart.NewWriter(downloadBuf)
-	downloadWriter.WriteField("pod_name", podName)
-	downloadWriter.WriteField("file_path", fmt.Sprintf("/%s", fileName))
+	downloadWriter.WriteField("podName", podName)
+	downloadWriter.WriteField("filePath", fmt.Sprintf("/%s", fileName))
 
 	err = downloadWriter.Close()
 	if err != nil {
@@ -247,7 +250,7 @@ func main() {
 		PodName:  podName,
 		Filepath: fileName,
 	}
-	fileStatHttpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:9090/v1%s?file_path=/%s&pod_name=%s", string(dfsCommon.FileStat), fReq.Filepath, fReq.PodName), nil)
+	fileStatHttpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:9090/v1%s?filePath=/%s&podName=%s", string(dfsCommon.FileStat), fReq.Filepath, fReq.PodName), nil)
 	if err != nil {
 		return
 	}
@@ -271,7 +274,7 @@ func main() {
 	}
 
 	// DirLs
-	dirLsHttpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:9090/v1%s?dir_path=/&pod_name=%s", string(dfsCommon.DirLs), fReq.PodName), nil)
+	dirLsHttpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:9090/v1%s?dirPath=/&podName=%s", string(dfsCommon.DirLs), fReq.PodName), nil)
 	if err != nil {
 		return
 	}

@@ -11,16 +11,16 @@ var events = require('./events');
     The following code block is for the demo only
     dont hard code password in your project
 */
-var username = "example"
-var password = "password"
+var username = "c565c97b2d5cb9d87059cb23ab4d9fcd"
+var password = "756e3c095324"
 var podName = "pod"
 
 function downloadFile() {
     var data = {
         "event": events.FileDownload,
         "params": {
-            "pod_name": podName,
-            "file_path": "/index.json"
+            "podName": podName,
+            "filePath": "/index.json"
         }
     }
     ws.send(JSON.stringify(data))
@@ -32,11 +32,11 @@ function uploadFile() {
     var data = {
         "event": events.FileUpload,
         "params": {
-            "pod_name": podName,
-            "file_name": "index.json",
-            "dir_path":"/",
-            "block_size": "1Mb",
-            "content_length": stat.size.toString()
+            "podName": podName,
+            "fileName": "index.json",
+            "dirPath":"/",
+            "blockSize": "1Mb",
+            "contentLength": stat.size.toString()
         }
     }
 
@@ -60,10 +60,10 @@ function loadCSV() {
     var data = {
         "event": events.KVLoadCSV,
         "params": {
-            "pod_name": podName,
-            "file_name": "index.json",
-            "table_name": table,
-            "content_length": stat.size.toString()
+            "podName": podName,
+            "fileName": "index.json",
+            "tableName": table,
+            "contentLength": stat.size.toString()
         }
     }
 
@@ -88,10 +88,10 @@ function loadJSON() {
     var data = {
         "event": events.DocLoadJson,
         "params": {
-            "pod_name": podName,
-            "file_name": "index.json",
-            "table_name": docTable,
-            "content_length": stat.size.toString()
+            "podName": podName,
+            "fileName": "index.json",
+            "tableName": docTable,
+            "contentLength": stat.size.toString()
         }
     }
 
@@ -113,7 +113,7 @@ function userLogin() {
     var data = {
         "event": events.UserLoginV2,
         "params": {
-            "user_name": username,
+            "userName": username,
             "password": password
         }
     }
@@ -124,7 +124,7 @@ function userLoggedin() {
     var data = {
         "event": events.UserIsLoggedin,
         "params": {
-            "user_name": username,
+            "userName": username,
         }
     }
     ws.send(JSON.stringify(data))
@@ -135,7 +135,7 @@ function userPresent() {
     var data = {
         "event": events.UserPresentV2,
         "params": {
-            "user_name": username,
+            "userName": username,
         }
     }
     console.log(data)
@@ -146,7 +146,7 @@ function userStat() {
     var data = {
         "event": events.UserStat,
         "params": {
-            "user_name": username,
+            "userName": username,
         }
     }
     ws.send(JSON.stringify(data))
@@ -156,7 +156,7 @@ function podNew() {
     var data = {
         "event": events.PodNew,
         "params": {
-            "pod_name": podName,
+            "podName": podName,
             "password": password
         }
     }
@@ -167,7 +167,7 @@ function podOpen() {
     var data = {
         "event": events.PodOpen,
         "params": {
-            "pod_name": podName,
+            "podName": podName,
             "password": password
         }
     }
@@ -185,8 +185,8 @@ function mkDir() {
     var data = {
         "event": events.DirMkdir,
         "params": {
-            "pod_name": podName,
-            "dir_path": "/d"
+            "podName": podName,
+            "dirPath": "/d"
         }
     }
     ws.send(JSON.stringify(data))
@@ -196,8 +196,8 @@ function rmDir() {
     var data = {
         "event": events.DirRmdir,
         "params": {
-            "pod_name": podName,
-            "dir_path": "/d"
+            "podName": podName,
+            "dirPath": "/d"
         }
     }
     ws.send(JSON.stringify(data))
@@ -207,8 +207,8 @@ function dirLs() {
     var data = {
         "event": events.DirLs,
         "params": {
-            "pod_name": podName,
-            "dir_path": "/"
+            "podName": podName,
+            "dirPath": "/"
         }
     }
     ws.send(JSON.stringify(data))
@@ -218,8 +218,8 @@ function dirStat() {
     var data = {
         "event": events.DirStat,
         "params": {
-            "pod_name": podName,
-            "dir_path": "/d"
+            "podName": podName,
+            "dirPath": "/d"
         }
     }
     ws.send(JSON.stringify(data))
@@ -229,8 +229,8 @@ function dirPresent() {
     var data = {
         "event": events.DirIsPresent,
         "params": {
-            "pod_name": podName,
-            "dir_path": "/d"
+            "podName": podName,
+            "dirPath": "/d"
         }
     }
     ws.send(JSON.stringify(data))
@@ -240,8 +240,8 @@ function stat() {
     var data = {
         "event": events.FileStat,
         "params": {
-            "pod_name": podName,
-            "file_path": "/index.json"
+            "podName": podName,
+            "filePath": "/index.json"
         }
     }
     ws.send(JSON.stringify(data))
@@ -252,9 +252,9 @@ function kvCreate() {
     var data = {
         "event": events.KVCreate,
         "params": {
-            "pod_name": podName,
-            "table_name": table,
-            "index_type": "string"
+            "podName": podName,
+            "tableName": table,
+            "indexType": "string"
         }
     }
     ws.send(JSON.stringify(data))
@@ -264,7 +264,7 @@ function kvList() {
     var data = {
         "event": events.KVList,
         "params": {
-            "pod_name": podName
+            "podName": podName
         }
     }
     ws.send(JSON.stringify(data))
@@ -274,8 +274,8 @@ function kvOpen() {
     var data = {
         "event": events.KVOpen,
         "params": {
-            "pod_name": podName,
-            "table_name": table,
+            "podName": podName,
+            "tableName": table,
         }
     }
     ws.send(JSON.stringify(data))
@@ -285,8 +285,8 @@ function kvEntryPut() {
     var data = {
         "event": events.KVEntryPut,
         "params": {
-            "pod_name": podName,
-            "table_name": table,
+            "podName": podName,
+            "tableName": table,
             "key": "key1",
             "value": "value"
         }
@@ -298,8 +298,8 @@ function kvCount() {
     var data = {
         "event": events.KVCount,
         "params": {
-            "pod_name": podName,
-            "table_name": table,
+            "podName": podName,
+            "tableName": table,
         }
     }
     ws.send(JSON.stringify(data))
@@ -309,8 +309,8 @@ function kvGet() {
     var data = {
         "event": events.KVEntryGet,
         "params": {
-            "pod_name": podName,
-            "table_name": table,
+            "podName": podName,
+            "tableName": table,
             "key": "key1",
         }
     }
@@ -321,9 +321,9 @@ function kvSeek() {
     var data = {
         "event": events.KVSeek,
         "params": {
-            "pod_name": podName,
-            "table_name": table,
-            "start_prefix": "key",
+            "podName": podName,
+            "tableName": table,
+            "startPrefix": "key",
         }
     }
     ws.send(JSON.stringify(data))
@@ -333,8 +333,8 @@ function kvSeekNext() {
     var data = {
         "event": events.KVSeekNext,
         "params": {
-            "pod_name": podName,
-            "table_name": table,
+            "podName": podName,
+            "tableName": table,
         }
     }
     ws.send(JSON.stringify(data))
@@ -344,8 +344,8 @@ function kvEntryDel() {
     var data = {
         "event": events.KVEntryDelete,
         "params": {
-            "pod_name": podName,
-            "table_name": table,
+            "podName": podName,
+            "tableName": table,
             "key": "key1",
         }
     }
@@ -357,8 +357,8 @@ function docCreate() {
     var data = {
         "event": events.DocCreate,
         "params": {
-            "pod_name": podName,
-            "table_name": docTable,
+            "podName": podName,
+            "tableName": docTable,
             "si": "first_name=string,age=number",
             "mutable": true
         }
@@ -370,8 +370,8 @@ function docLs() {
     var data = {
         "event": events.DocList,
         "params": {
-            "pod_name": podName,
-            "table_name": docTable
+            "podName": podName,
+            "tableName": docTable
         }
     }
     ws.send(JSON.stringify(data))
@@ -381,8 +381,8 @@ function docOpen() {
     var data = {
         "event": events.DocOpen,
         "params": {
-            "pod_name": podName,
-            "table_name": docTable
+            "podName": podName,
+            "tableName": docTable
         }
     }
     ws.send(JSON.stringify(data))
@@ -392,8 +392,8 @@ function docEntryPut() {
     var data = {
         "event": events.DocEntryPut,
         "params": {
-            "pod_name": podName,
-            "table_name": docTable,
+            "podName": podName,
+            "tableName": docTable,
             "doc":  `{"id":"1", "first_name": "Hello1", "age": 11}`,
         }
     }
@@ -404,8 +404,8 @@ function docEntryGet() {
     var data = {
         "event": events.DocEntryGet,
         "params": {
-            "pod_name": podName,
-            "table_name": docTable,
+            "podName": podName,
+            "tableName": docTable,
             "id":  "1",
         }
     }
@@ -416,8 +416,8 @@ function docFind() {
     var data = {
         "event": events.DocFind,
         "params": {
-            "pod_name": podName,
-            "table_name": docTable,
+            "podName": podName,
+            "tableName": docTable,
             "expr":  `age>10`,
         }
     }
@@ -428,8 +428,8 @@ function docCount() {
     var data = {
         "event": events.DocCount,
         "params": {
-            "pod_name": podName,
-            "table_name": docTable,
+            "podName": podName,
+            "tableName": docTable,
         }
     }
     ws.send(JSON.stringify(data))
@@ -439,8 +439,8 @@ function docEntryDel() {
     var data = {
         "event": events.DocEntryDel,
         "params": {
-            "pod_name": podName,
-            "table_name": docTable,
+            "podName": podName,
+            "tableName": docTable,
             "id":  "1",
         }
     }
@@ -451,8 +451,8 @@ function docDel() {
     var data = {
         "event": events.DocDelete,
         "params": {
-            "pod_name": podName,
-            "table_name": docTable,
+            "podName": podName,
+            "tableName": docTable,
         }
     }
     ws.send(JSON.stringify(data))

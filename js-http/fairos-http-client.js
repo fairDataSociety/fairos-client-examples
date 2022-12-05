@@ -1,14 +1,14 @@
 // Let us define properties needed for API calls
-const username = "example"
-const password = "password"
+const username = "c565c97b2d5cb9d87059cb23ab4d9fcd"
+const password = "756e3c095324"
 const podName = "pod"
 const hostv1 = "http://localhost:9090/v1";
 const hostv2 = "http://localhost:9090/v2";
 
 function downloadFile() {
     var data = {
-        "pod_name": podName,
-        "file_path": "/index.json"
+        "podName": podName,
+        "filePath": "/index.json"
     }
     return fetch(hostv1 + "file/download", {
         method: "POST",
@@ -22,10 +22,10 @@ function uploadFile() {
     const formData = new FormData();
 
     formData.append("files", fileupload.files[0]);
-    formData.set("pod_name", podName);
-    formData.append("file_name", "index.json");
-    formData.set("dir_path", "/");
-    formData.set("block_size", "1Mb");
+    formData.set("podName", podName);
+    formData.append("fileName", "index.json");
+    formData.set("dirPath", "/");
+    formData.set("blockSize", "1Mb");
 
     fetch(hostv1 + "/file/upload", {
         method: "POST",
@@ -36,7 +36,7 @@ function uploadFile() {
 
 userLogin = function() {
     var data = {
-        "user_name": username,
+        "userName": username,
         "password": password
     };
     return fetch(hostv2 + "/user/login", {
@@ -51,7 +51,7 @@ userLogin = function() {
 
 userLoggedin = function() {
     var data = {
-        "user_name": username
+        "userName": username
     };
     return fetch(hostv1 + "/user/isloggedin" +  '?' + new URLSearchParams(data), {
         method: "GET",
@@ -65,7 +65,7 @@ userLoggedin = function() {
 
 userPresent = function() {
     var data = {
-        "user_name": username
+        "userName": username
     };
     return fetch(hostv2 + "/user/present" + '?' + new URLSearchParams(data), {
         method: "GET",
@@ -78,7 +78,7 @@ userPresent = function() {
 
 userStat = function() {
     var data = {
-        "user_name": username
+        "userName": username
     };
     return fetch(hostv1 + "/user/stat" + '?' + new URLSearchParams(data), {
         method: "GET",
@@ -91,7 +91,7 @@ userStat = function() {
 
 podNew = function() {
     var data = {
-        "pod_name": podName,
+        "podName": podName,
         "password": password
     };
     return fetch(hostv1 + "/pod/new", {
@@ -106,7 +106,7 @@ podNew = function() {
 
 podOpen = function() {
     var data = {
-        "pod_name": podName,
+        "podName": podName,
         "password": password
     };
     return fetch(hostv1 + "/pod/open", {
@@ -121,7 +121,7 @@ podOpen = function() {
 
 podLs = function() {
     var data = {
-        "pod_name": podName,
+        "podName": podName,
         "password": password
     };
     return fetch(hostv1 + "/pod/ls" + '?' + new URLSearchParams(data), {
@@ -135,8 +135,8 @@ podLs = function() {
 
 mkDir = function() {
     var data = {
-        "pod_name": podName,
-        "dir_path": "/d"
+        "podName": podName,
+        "dirPath": "/d"
     };
     return fetch(hostv1 + "/dir/mkdir", {
         method: "POST",
@@ -150,8 +150,8 @@ mkDir = function() {
 
 rmDir = function() {
     var data = {
-        "pod_name": podName,
-        "dir_path": "/d"
+        "podName": podName,
+        "dirPath": "/d"
     };
     return fetch(hostv1 + "/dir/rmdir", {
         method: "DELETE",
@@ -165,8 +165,8 @@ rmDir = function() {
 
 dirLs = function() {
     var data = {
-        "pod_name": podName,
-        "dir_path": "/"
+        "podName": podName,
+        "dirPath": "/"
     };
     return fetch(hostv1 + "/dir/ls" + '?' + new URLSearchParams(data), {
         method: "GET",
@@ -179,8 +179,8 @@ dirLs = function() {
 
 dirStat = function() {
     var data = {
-        "pod_name": podName,
-        "dir_path": "/d"
+        "podName": podName,
+        "dirPath": "/d"
     };
     return fetch(hostv1 + "/dir/stat" + '?' + new URLSearchParams(data), {
         method: "GET",
@@ -193,8 +193,8 @@ dirStat = function() {
 
 dirPresent = function() {
     var data = {
-        "pod_name": podName,
-        "dir_path": "/d"
+        "podName": podName,
+        "dirPath": "/d"
     };
     return fetch(hostv1 + "/dir/present" + '?' + new URLSearchParams(data), {
         method: "GET",
@@ -207,8 +207,8 @@ dirPresent = function() {
 
 stat = function() {
     var data = {
-        "pod_name": podName,
-        "file_path": "/index.json"
+        "podName": podName,
+        "filePath": "/index.json"
     };
     return fetch(hostv1 + "/file/stat" + '?' + new URLSearchParams(data), {
         method: "GET",
@@ -222,9 +222,9 @@ stat = function() {
 var table = "kv_1"
 kvCreate = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
-        "index_type": "string"
+        "podName": podName,
+        "tableName": table,
+        "indexType": "string"
     };
     return fetch(hostv1 + "/kv/new", {
         method: "POST",
@@ -238,7 +238,7 @@ kvCreate = function() {
 
 kvList = function() {
     var data = {
-        "pod_name": podName
+        "podName": podName
     };
     return fetch(hostv1 + "/kv/ls" + '?' + new URLSearchParams(data), {
         method: "GET",
@@ -251,8 +251,8 @@ kvList = function() {
 
 kvOpen = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
     };
     return fetch(hostv1 + "/kv/open", {
         method: "POST",
@@ -266,8 +266,8 @@ kvOpen = function() {
 
 kvEntryPut = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
         "key": "key1",
         "value": "value"
     };
@@ -283,8 +283,8 @@ kvEntryPut = function() {
 
 kvCount = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
     };
     return fetch(hostv1 + "/kv/count", {
         method: "POST",
@@ -298,8 +298,8 @@ kvCount = function() {
 
 kvGet = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
         "key": "key1",
     };
     return fetch(hostv1 + "/kv/entry/get" + '?' + new URLSearchParams(data), {
@@ -313,9 +313,9 @@ kvGet = function() {
 
 kvSeek = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
-        "start_prefix": "key",
+        "podName": podName,
+        "tableName": table,
+        "startPrefix": "key",
     };
     return fetch(hostv1 + "/kv/seek", {
         method: "POST",
@@ -329,8 +329,8 @@ kvSeek = function() {
 
 kvSeekNext = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
     };
     return fetch(hostv1 + "/kv/seek/next" + '?' + new URLSearchParams(data), {
         method: "GET",
@@ -343,8 +343,8 @@ kvSeekNext = function() {
 
 kvEntryDel = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": table,
+        "podName": podName,
+        "tableName": table,
         "key": "key1",
     };
     return fetch(hostv1 + "/kv/entry/del", {
@@ -360,8 +360,8 @@ kvEntryDel = function() {
 var docTable = "doc_1"
 docCreate = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
         "si": "first_name=string,age=number",
         "mutable": true
     };
@@ -377,7 +377,7 @@ docCreate = function() {
 
 docLs = function() {
     var data = {
-        "pod_name": podName
+        "podName": podName
     };
     return fetch(hostv1 + "/doc/ls" + '?' + new URLSearchParams(data), {
         method: "GET",
@@ -390,8 +390,8 @@ docLs = function() {
 
 docOpen = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable
+        "podName": podName,
+        "tableName": docTable
     };
     return fetch(hostv1 + "/doc/open", {
         method: "POST",
@@ -405,8 +405,8 @@ docOpen = function() {
 
 docEntryPut = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
         "doc":  `{"id":"1", "first_name": "Hello1", "age": 11}`,
     };
     return fetch(hostv1 + "/doc/entry/put", {
@@ -421,8 +421,8 @@ docEntryPut = function() {
 
 docEntryGet = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
         "id":  "1",
     };
     return fetch(hostv1 + "/doc/entry/get" + '?' + new URLSearchParams(data), {
@@ -436,8 +436,8 @@ docEntryGet = function() {
 
 docFind = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
         "expr":  `age>10`,
     };
     return fetch(hostv1 + "/doc/find" + '?' + new URLSearchParams(data), {
@@ -451,8 +451,8 @@ docFind = function() {
 
 docCount = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
     };
     return fetch(hostv1 + "/doc/count", {
         method: "POST",
@@ -466,8 +466,8 @@ docCount = function() {
 
 docEntryDel = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
         "id":  "1",
     };
     return fetch(hostv1 + "/doc/entry/del", {
@@ -482,8 +482,8 @@ docEntryDel = function() {
 
 docDel = function() {
     var data = {
-        "pod_name": podName,
-        "table_name": docTable,
+        "podName": podName,
+        "tableName": docTable,
     };
     return fetch(hostv1 + "/doc/delete", {
         method: "DELETE",
@@ -537,13 +537,13 @@ function apiTest() {
         .then(handleResponse)
         .then(mkDir)
         .then(handleResponse)
-        .then(rmDir)
-        .then(handleResponse)
         .then(dirLs)
         .then(handleResponse)
         .then(dirStat)
         .then(handleResponse)
         .then(dirPresent)
+        .then(handleResponse)
+        .then(rmDir)
         .then(handleResponse)
         .then(stat)
         .then(handleResponse)
