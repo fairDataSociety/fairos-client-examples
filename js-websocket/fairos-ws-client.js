@@ -171,8 +171,7 @@ podNew = function() {
     var data = {
         "event": PodNew,
         "params": {
-            "podName": podName,
-            "password": password
+            "podName": podName
         }
     }
     ws.send(JSON.stringify(data))
@@ -182,8 +181,7 @@ podOpen = function() {
     var data = {
         "event": PodOpen,
         "params": {
-            "podName": podName,
-            "password": password
+            "podName": podName
         }
     }
     ws.send(JSON.stringify(data))
