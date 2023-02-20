@@ -130,8 +130,7 @@ function userLoggedin() {
 
 function podNew() {
     return axios.post(pathv1+events.PodNew,  {
-        "podName": podName,
-        "password": password
+        "podName": podName
     }, {
         headers: {
             "Content-Type" : "application/json",
@@ -144,8 +143,7 @@ function podNew() {
 
 function podOpen() {
     return axios.post(pathv1+events.PodOpen,  {
-        "podName": podName,
-        "password": password
+        "podName": podName
     }, {
         headers: {
             "Content-Type" : "application/json",
