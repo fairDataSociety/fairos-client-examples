@@ -39,7 +39,7 @@ func main() {
 	}
 
 	// is User present
-	isUserPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s%s?userName=%s", basev2, string(dfsCommon.UserPresent), loginRequest.UserName), nil)
+	isUserPresentReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s%s?userName=%s", basev2, string(dfsCommon.UserPresentV2), loginRequest.UserName), nil)
 	isUserPresentResp, err := c.Do(isUserPresentReq)
 	if err != nil {
 		fmt.Println("Error ", err.Error(), time.Now())
@@ -81,8 +81,7 @@ func main() {
 
 	cookie := userLoginResp.Header["Set-Cookie"]
 	podReq := &dfsCommon.PodRequest{
-		PodName:  podName,
-		Password: password,
+		PodName: podName,
 	}
 	podReqData, err := json.Marshal(podReq)
 	if err != nil {
