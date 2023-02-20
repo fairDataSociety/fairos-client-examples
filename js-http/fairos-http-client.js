@@ -91,8 +91,7 @@ userStat = function() {
 
 podNew = function() {
     var data = {
-        "podName": podName,
-        "password": password
+        "podName": podName
     };
     return fetch(hostv1 + "/pod/new", {
         method: "POST",
@@ -106,8 +105,7 @@ podNew = function() {
 
 podOpen = function() {
     var data = {
-        "podName": podName,
-        "password": password
+        "podName": podName
     };
     return fetch(hostv1 + "/pod/open", {
         method: "POST",
