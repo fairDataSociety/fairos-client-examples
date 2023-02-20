@@ -149,21 +149,6 @@ func main() {
 		log.Println("write:", err)
 		return
 	}
-	//
-	// userExport
-	userExport := &dfsCommon.WebsocketRequest{
-		Event: dfsCommon.UserExport,
-	}
-	data, err = json.Marshal(userExport)
-	if err != nil {
-		log.Println("Marshal:", err)
-		return
-	}
-	err = c.WriteMessage(websocket.TextMessage, data)
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
 
 	// userStat
 	userStat := &dfsCommon.WebsocketRequest{
@@ -184,8 +169,7 @@ func main() {
 	podNew := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.PodNew,
 		Params: dfsCommon.PodRequest{
-			PodName:  podName,
-			Password: password,
+			PodName: podName,
 		},
 	}
 	data, err = json.Marshal(podNew)
@@ -203,8 +187,7 @@ func main() {
 	podOpen := &dfsCommon.WebsocketRequest{
 		Event: dfsCommon.PodOpen,
 		Params: dfsCommon.PodRequest{
-			PodName:  podName,
-			Password: password,
+			PodName: podName,
 		},
 	}
 	data, err = json.Marshal(podOpen)
