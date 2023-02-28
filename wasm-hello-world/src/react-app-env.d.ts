@@ -1,9 +1,13 @@
 /// <reference types="react-scripts" />
 interface Window {
   go?: Go
+  ethereum: any
+  web3: any
   connect (beeEndpoint: string, stampId: string, rpc: string, network: string): Promise<string>
   stop (): void
   login (username: string, password: string): Promise<user>
+  connectWallet (username: string, password: string, walletAddress: string, signature: string): Promise<string>
+  walletLogin (addressHex: string, signature: string): Promise<user>
   userPresent (username: string): Promise<present>
   userIsLoggedIn (username: string): Promise<loggedin>
   userLogout (sessionId: string): Promise<string>
