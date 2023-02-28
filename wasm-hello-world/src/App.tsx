@@ -39,6 +39,12 @@ function App() {
         let resp = await window.walletLogin(web3.eth.defaultAccount.toString(), signature)
         console.log(resp)
 
+        let userPresent= await window.userPresent("check")
+        console.log(userPresent)
+
+        let userIsLoggedIn= await window.userIsLoggedIn("check")
+        console.log(userIsLoggedIn)
+
         let respstat= await window.userStat(resp.sessionId)
         console.log(respstat)
 
@@ -50,6 +56,13 @@ function App() {
 
         let resp4 = await window.dirList(resp.sessionId, resp2.pods[0], "/")
         console.log(resp4)
+
+        let podShare = await window.podShare(resp.sessionId, resp2.pods[0], '')
+        console.log(podShare)
+
+        console.log(resp4.files[0].name)
+        let fileStat = await window.fileStat(resp.sessionId, resp2.pods[0], "/"+resp4.files[0].name)
+        console.log(fileStat)
 
       } catch (error) {
         console.error(error);

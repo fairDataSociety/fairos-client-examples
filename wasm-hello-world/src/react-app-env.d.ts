@@ -35,6 +35,16 @@ interface Window {
   fileReceiveInfo (sessionId: string, fileSharingReference: string): Promise<fileShareInfo>
   fileDelete (sessionId: string, podName: string, filePath: string): Promise<string>
   fileStat (sessionId: string, podName: string, filePath: string): Promise<fileStat>
+
+  listPodInMarketplace (sessionId: string, podName: string, title: string, desc: string, thumbnail: string, price: string, category: string): Promise<string>
+  changePodListStatusInMarketplace (sessionId: string, subHashStr: string, show: boolean): Promise<string>
+  requestSubscription (sessionId: string, subHash: string): Promise<string>
+  approveSubscription (sessionId: string, podName: string, reqHash: string, subscriberNameHash: string): Promise<string>
+  getSubscriptions (sessionId: string, start: number, limit: number): Promise<subscriptions>
+  openSubscribedPod (sessionId: string, subHashStr: string): Promise<string>
+  getSubscribablePods (sessionId: string): Promise<subscribablePods>
+  getSubRequests (sessionId: string): Promise<subRequests>
+  getSubscribablePodInfo (sessionId: string): Promise<subInfo>
 }
 
 interface user {
@@ -96,9 +106,20 @@ interface fileShareInfo {
   sharedTime: string
 }
 
+interface listItem {
+  name: string
+  size: string
+  blockSize: string
+  contentType: string
+  creationTime: string
+  modificationTime: string
+  accessTime: string
+  mode: string
+}
+
 interface dirList {
-  files: string[]
-  dirs: string[]
+  files: listItem[]
+  dirs: listItem[]
 }
 
 interface dirStat {
@@ -132,4 +153,55 @@ interface block {
   reference: string
   size: string
   compressedSize: string
+}
+
+interface subInfo {
+  category: string
+  description: string
+  fdpSellerNameHash: string
+  imageUrl: string
+  podAddress: string
+  podName: string
+  price: string
+  title: string
+}
+
+interface subRequest {
+  subHash: string
+  buyerNameHash: string
+  buyer: string
+  requestHash: string
+}
+
+interface subRequests {
+  requests: subRequest[]
+}
+
+interface subscribablePod {
+  subHash: string
+  sellerNameHash: string
+  seller: string
+  swarmLocation: string
+  price: number
+  active: boolean
+  earned: number
+  bids: number
+  sells: number
+  reports: number
+}
+
+interface subscribablePods {
+  subscribablePods: subscribablePod[]
+}
+
+interface subscription {
+  podName: string
+  subHash: string
+  podAddress: string
+  validTill: number
+  infoLocation: string
+}
+
+interface subscriptions {
+  subscriptions: subscription[]
 }
