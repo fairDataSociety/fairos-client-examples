@@ -60,7 +60,7 @@ function App() {
   }
 
   async function mConnect() {
-    let resp = await window.connect("http://localhost:1633", "51987f7304b419d8aa184d35d46b3cfeb1b00986ad937b3151c7ade699c81338", "http://localhost:9545", "play")
+    let resp = await window.connect("http://localhost:1633", "51987f7304b419d8aa184d35d46b3cfeb1b00986ad937b3151c7ade699c81338", "http://localhost:9545", "play", "http://localhost:9545", "0x21a59654176f2689d12E828B77a783072CD26680")
     console.log(resp)
   }
 

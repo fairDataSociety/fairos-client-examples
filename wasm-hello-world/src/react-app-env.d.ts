@@ -3,7 +3,7 @@ interface Window {
   go?: Go
   ethereum: any
   web3: any
-  connect (beeEndpoint: string, stampId: string, rpc: string, network: string): Promise<string>
+  connect (beeEndpoint: string, stampId: string, rpc: string, network: string, subRpc: string, subContractAddress: string): Promise<string>
   stop (): void
   login (username: string, password: string): Promise<user>
   connectWallet (username: string, password: string, walletAddress: string, signature: string): Promise<string>
