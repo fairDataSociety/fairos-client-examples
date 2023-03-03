@@ -13,6 +13,7 @@ interface Window {
   userLogout (sessionId: string): Promise<string>
   userDelete (sessionId: string, password: string): Promise<string>
   userStat (sessionId: string): Promise<userStat>
+  getNameHash (sessionId: string, username: string): Promise<namehash>
   podNew (sessionId: string, podName: string): Promise<string>
   podOpen (sessionId: string, podName: string): Promise<string>
   podClose (sessionId: string, podName: string): Promise<string>
@@ -63,6 +64,10 @@ interface loggedin {
 interface userStat {
   userName: string
   address: string
+}
+
+interface namehash {
+  namehash: string
 }
 
 interface podList {
