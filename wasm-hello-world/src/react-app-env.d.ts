@@ -44,6 +44,7 @@ interface Window {
   encryptSubscription (sessionId: string, podName: string, subscriberNameHash: string): Promise<reference>
   getSubscriptions (sessionId: string, start: number, limit: number): Promise<subscriptions>
   openSubscribedPod (sessionId: string, subHashStr: string): Promise<string>
+  openSubscribedPodFromReference (sessionId: string, reference: string, sellerNameHash: string): Promise<string>
   getSubscribablePods (sessionId: string): Promise<subscribablePods>
   getSubRequests (sessionId: string): Promise<subRequests>
   getSubscribablePodInfo (sessionId: string): Promise<subInfo>
