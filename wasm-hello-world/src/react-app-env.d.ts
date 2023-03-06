@@ -41,6 +41,7 @@ interface Window {
   changePodListStatusInMarketplace (sessionId: string, subHashStr: string, show: boolean): Promise<string>
   requestSubscription (sessionId: string, subHash: string): Promise<string>
   approveSubscription (sessionId: string, podName: string, reqHash: string, subscriberNameHash: string): Promise<string>
+  encryptSubscription (sessionId: string, podName: string, subscriberNameHash: string): Promise<reference>
   getSubscriptions (sessionId: string, start: number, limit: number): Promise<subscriptions>
   openSubscribedPod (sessionId: string, subHashStr: string): Promise<string>
   getSubscribablePods (sessionId: string): Promise<subscribablePods>
@@ -68,6 +69,10 @@ interface userStat {
 
 interface namehash {
   namehash: string
+}
+
+interface reference {
+  reference: string
 }
 
 interface podList {
