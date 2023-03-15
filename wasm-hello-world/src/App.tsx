@@ -13,7 +13,7 @@ function App() {
         console.log(accounts)
         web3.eth.defaultAccount = accounts[0];
         console.log(web3.eth.defaultAccount.toString())
-        const signature = await web3.eth.personal.sign("asdasd"+web3.eth.defaultAccount+web3.eth.defaultAccount, web3.eth.defaultAccount, '')
+        const signature = await web3.eth.personal.sign(web3.eth.defaultAccount, web3.eth.defaultAccount, '')
         console.log(signature)
         let resp = await window.connectWallet("check", "passwordpassword", web3.eth.defaultAccount, signature)
         console.log(resp)
@@ -34,7 +34,7 @@ function App() {
         console.log(accounts)
         web3.eth.defaultAccount = accounts[0];
         console.log(web3.eth.defaultAccount.toString())
-        const signature = await web3.eth.personal.sign("asdasd"+web3.eth.defaultAccount+web3.eth.defaultAccount, web3.eth.defaultAccount, '')
+        const signature = await web3.eth.personal.sign(web3.eth.defaultAccount, web3.eth.defaultAccount, '')
         console.log(signature)
         let resp = await window.walletLogin(web3.eth.defaultAccount.toString(), signature)
         console.log(resp)
@@ -73,8 +73,19 @@ function App() {
   }
 
   async function mConnect() {
-    let resp = await window.connect("https://bee-1.fairdatasociety.org", "0000000000000000000000000000000000000000000000000000000000000000", "https://xdai.dev.fairdatasociety.org", "testnet", "http://localhost:9545", "0x21a59654176f2689d12E828B77a783072CD26680")
-    console.log(resp)
+    let respConnect = await window.connect("http://localhost:1633", "51987f7304b419d8aa184d35d46b3cfeb1b00986ad937b3151c7ade699c81338", "http://localhost:9545", "play", "http://localhost:9545", "")
+    console.log(respConnect)
+
+
+    let respLogin = await window.login("check", "1234567812345678")
+    console.log(respLogin)
+
+
+    let resp2 = await window.podList(respLogin.sessionId)
+    console.log(resp2)
+
+    let respOpen = await window.podOpen(respLogin.sessionId, resp2.pods[0])
+    console.log(respOpen)
   }
 
 

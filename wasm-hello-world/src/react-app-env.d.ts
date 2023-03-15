@@ -3,7 +3,7 @@ interface Window {
   go?: Go
   ethereum: any
   web3: any
-  connect (beeEndpoint: string, stampId: string, rpc: string, network: string, subRpc: string, subContractAddress: string): Promise<string>
+  connect (beeEndpoint: string, stampId: string, rpc: string, network: string, subRPC: string, subAddr: string): Promise<string>
   stop (): void
   login (username: string, password: string): Promise<user>
   connectWallet (username: string, password: string, walletAddress: string, signature: string): Promise<string>
@@ -37,12 +37,8 @@ interface Window {
   fileDelete (sessionId: string, podName: string, filePath: string): Promise<string>
   fileStat (sessionId: string, podName: string, filePath: string): Promise<fileStat>
 
-  listPodInMarketplace (sessionId: string, podName: string, title: string, desc: string, thumbnail: string, price: string, category: string): Promise<string>
-  changePodListStatusInMarketplace (sessionId: string, subHashStr: string, show: boolean): Promise<string>
-  requestSubscription (sessionId: string, subHash: string): Promise<string>
-  approveSubscription (sessionId: string, podName: string, reqHash: string, subscriberNameHash: string): Promise<string>
   encryptSubscription (sessionId: string, podName: string, subscriberNameHash: string): Promise<reference>
-  getSubscriptions (sessionId: string, start: number, limit: number): Promise<subscriptions>
+  getSubscriptions (sessionId: string): Promise<subscriptions>
   openSubscribedPod (sessionId: string, subHashStr: string): Promise<string>
   openSubscribedPodFromReference (sessionId: string, reference: string, sellerNameHash: string): Promise<string>
   getSubscribablePods (sessionId: string): Promise<subscribablePods>

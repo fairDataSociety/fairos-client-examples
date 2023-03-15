@@ -2,3 +2,4 @@
 .DS_Store
 node-http/node_modules
 node-websocket/node_modules
+go/
