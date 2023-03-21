@@ -1,14 +1,19 @@
 /// <reference types="react-scripts" />
 interface Window {
   go?: Go
-  connect (beeEndpoint: string, stampId: string, rpc: string, network: string): Promise<string>
+  ethereum: any
+  web3: any
+  connect (beeEndpoint: string, stampId: string, rpc: string, network: string, subRPC: string, subAddr: string): Promise<string>
   stop (): void
   login (username: string, password: string): Promise<user>
+  connectWallet (username: string, password: string, walletAddress: string, signature: string): Promise<string>
+  walletLogin (addressHex: string, signature: string): Promise<user>
   userPresent (username: string): Promise<present>
   userIsLoggedIn (username: string): Promise<loggedin>
   userLogout (sessionId: string): Promise<string>
   userDelete (sessionId: string, password: string): Promise<string>
   userStat (sessionId: string): Promise<userStat>
+  getNameHash (sessionId: string, username: string): Promise<namehash>
   podNew (sessionId: string, podName: string): Promise<string>
   podOpen (sessionId: string, podName: string): Promise<string>
   podClose (sessionId: string, podName: string): Promise<string>
@@ -31,6 +36,14 @@ interface Window {
   fileReceiveInfo (sessionId: string, fileSharingReference: string): Promise<fileShareInfo>
   fileDelete (sessionId: string, podName: string, filePath: string): Promise<string>
   fileStat (sessionId: string, podName: string, filePath: string): Promise<fileStat>
+
+  encryptSubscription (sessionId: string, podName: string, subscriberNameHash: string): Promise<reference>
+  getSubscriptions (sessionId: string): Promise<subscriptions>
+  openSubscribedPod (sessionId: string, subHashStr: string): Promise<string>
+  openSubscribedPodFromReference (sessionId: string, reference: string, sellerNameHash: string): Promise<string>
+  getSubscribablePods (sessionId: string): Promise<subscribablePods>
+  getSubRequests (sessionId: string): Promise<subRequests>
+  getSubscribablePodInfo (sessionId: string): Promise<subInfo>
 }
 
 interface user {
@@ -49,6 +62,14 @@ interface loggedin {
 interface userStat {
   userName: string
   address: string
+}
+
+interface namehash {
+  namehash: string
+}
+
+interface reference {
+  reference: string
 }
 
 interface podList {
@@ -92,9 +113,20 @@ interface fileShareInfo {
   sharedTime: string
 }
 
+interface listItem {
+  name: string
+  size: string
+  blockSize: string
+  contentType: string
+  creationTime: string
+  modificationTime: string
+  accessTime: string
+  mode: string
+}
+
 interface dirList {
-  files: string[]
-  dirs: string[]
+  files: listItem[]
+  dirs: listItem[]
 }
 
 interface dirStat {
@@ -128,4 +160,55 @@ interface block {
   reference: string
   size: string
   compressedSize: string
+}
+
+interface subInfo {
+  category: string
+  description: string
+  fdpSellerNameHash: string
+  imageUrl: string
+  podAddress: string
+  podName: string
+  price: string
+  title: string
+}
+
+interface subRequest {
+  subHash: string
+  buyerNameHash: string
+  buyer: string
+  requestHash: string
+}
+
+interface subRequests {
+  requests: subRequest[]
+}
+
+interface subscribablePod {
+  subHash: string
+  sellerNameHash: string
+  seller: string
+  swarmLocation: string
+  price: number
+  active: boolean
+  earned: number
+  bids: number
+  sells: number
+  reports: number
+}
+
+interface subscribablePods {
+  subscribablePods: subscribablePod[]
+}
+
+interface subscription {
+  podName: string
+  subHash: string
+  podAddress: string
+  validTill: number
+  infoLocation: string
+}
+
+interface subscriptions {
+  subscriptions: subscription[]
 }
