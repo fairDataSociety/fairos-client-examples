@@ -48,6 +48,7 @@ interface Window {
 
 interface user {
   user: string
+  nameHash: string
   sessionId: string
 }
 
