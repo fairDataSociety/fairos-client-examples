@@ -15,7 +15,7 @@ function App() {
         console.log(web3.eth.defaultAccount.toString())
         const signature = await web3.eth.personal.sign(web3.eth.defaultAccount, web3.eth.defaultAccount, '')
         console.log(signature)
-        let resp = await window.connectWallet("check", "passwordpassword", web3.eth.defaultAccount, signature)
+        let resp = await window.connectWallet("check", "passwordpassword", "0x80e3Ee18AD73e6FF6373A513ACcF58B6a539fA77", signature)
         console.log(resp)
       } catch (error) {
           console.error(error);
@@ -36,7 +36,7 @@ function App() {
         console.log(web3.eth.defaultAccount.toString())
         const signature = await web3.eth.personal.sign(web3.eth.defaultAccount, web3.eth.defaultAccount, '')
         console.log(signature)
-        let resp = await window.walletLogin(web3.eth.defaultAccount.toString(), signature)
+        let resp = await window.walletLogin("0x80e3Ee18AD73e6FF6373A513ACcF58B6a539fA77", signature)
         console.log(resp)
 
         let userPresent= await window.userPresent("check")
@@ -73,11 +73,11 @@ function App() {
   }
 
   async function mConnect() {
-    let respConnect = await window.connect("http://localhost:1633", "51987f7304b419d8aa184d35d46b3cfeb1b00986ad937b3151c7ade699c81338", "http://localhost:9545", "play", "http://localhost:9545", "")
+    let respConnect = await window.connect("https://bee-1.fairdatasociety.org", "0000000000000000000000000000000000000000000000000000000000000000", "https://xdai.dev.fairdatasociety.org/", "testnet", "https://xdai.dev.fairdatasociety.org/", "")
     console.log(respConnect)
 
 
-    let respLogin = await window.login("check", "1234567812345678")
+    let respLogin = await window.login("demotime20", "passwordpassword")
     console.log(respLogin)
 
 
