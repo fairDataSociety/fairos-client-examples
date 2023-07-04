@@ -122,7 +122,7 @@ podLs = function() {
         "podName": podName,
         "password": password
     };
-    return fetch(hostv1 + "/pod/ls" + '?' + new URLSearchParams(data), {
+    return fetch(hostv1 + "/pod/ls", {
         method: "GET",
         headers: {
           "Content-Type": "application/json"

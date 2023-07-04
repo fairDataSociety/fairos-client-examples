@@ -97,7 +97,7 @@ func main() {
 
 	// userLogin
 	login := &dfsCommon.WebsocketRequest{
-		Event: dfsCommon.UserLoginV2,
+		Event: dfsCommon.UserLogin,
 		Params: dfsCommon.UserLoginRequest{
 			UserName: username,
 			Password: password,
@@ -116,7 +116,7 @@ func main() {
 
 	// userPresent
 	uPresent := &dfsCommon.WebsocketRequest{
-		Event: dfsCommon.UserPresentV2,
+		Event: dfsCommon.UserPresent,
 		Params: dfsCommon.UserLoginRequest{
 			UserName: username,
 		},
