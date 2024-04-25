@@ -11,6 +11,10 @@ WebSocket client
 - go implementation
 - js implementation
 
+WASM Client Example
+
+
+
 Please refer to each implementation for details. 
 Also check https://github.com/fairDataSociety/fairOS-dfs-clients for FairOS API OpenAPI specs, how to build custom libraries using CodeGen. 
 
