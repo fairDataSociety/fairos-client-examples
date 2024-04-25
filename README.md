@@ -11,5 +11,8 @@ WebSocket client
 - go implementation
 - js implementation
 
-Please refer to each implementation. 
+Please refer to each implementation for details. 
+Also check https://github.com/fairDataSociety/fairOS-dfs-clients for FairOS API OpenAPI specs, how to build custom libraries using CodeGen. 
+
+Several libraries are available in FairOS releases and are built when API modifications are present. https://github.com/fairDataSociety/fairOS-dfs/releases
 
